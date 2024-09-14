@@ -1,15 +1,16 @@
-import { createPool } from "mysql2/promise"
+import { Pool, createPool } from "mysql2/promise"
+import { Database, DatabaseConstructorData } from "../../types";
 
-export class Database{
-    #pool
+export class SQLDatabase implements Database{
+    private pool: Pool;
 
-    constructor(data){
+    constructor(data: DatabaseConstructorData){
         const { host, port, user, password, database } = data;
 
         if(!database) throw new Error("database must be specified")
         if(!user) throw new Error("user must be specified")
 
-        this.#pool = createPool({
+        this.pool = createPool({
             host,
             port,
             user,
@@ -20,19 +21,15 @@ export class Database{
         })
     }
 
-    async query(query){
-        const pool = await this.#pool.getConnection()
+    async query(query: string): Promise<unknown[] | null>{
+        const pool = await this.pool.getConnection()
 
-        let result
         try{
-            result = await pool.query(query)
+            return await pool.query(query)
         }
         catch(error){
             console.error(error)
             return null
         }
-        return result
     }
 }
-
-

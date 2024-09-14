@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pl">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Mnich</title>
+        <link href="/css/style.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    </head>
+    <body>
+        <%- include("common/searchbar", {categories, user, cart}) %>
+
+        <main>
+            <div id="filtered-search">
+                <section id="filters">
+                    <div class="filter-section categories">
+                        <h2>Kategorie:</h2>
+                        <ul>
+                            <% categories.forEach(category => {
+                                <li onClick="toggleSubcategories(this)" class="category">
+                                    <% category.name %>
+                                    <% if(category.subcategories.length) { %>
+                                        <ul class="subcategories">
+                                            <% category.subcategories.forEach(subcategory => {
+                                                <%= subcategory.name %>
+                                            <% }) %>
+                                        </ul>
+                                    <% } %>
+                                </li>
+                            <% }) %>
+                        </ul>
+                    </div>
+
+                    <div class="filter-section state">
+                        <h2>Stan:</h2>
+                        <span>
+                            <input type="checkbox" name="state" id="state-new" checked="<%= filters.state.includes(0) %>">
+                            <label for="state-new">Nowy</label>
+                        </span>
+                        <span>
+                            <input type="checkbox" name="state" id="state-vgood" checked="<%= filters.state.includes(1) %>">
+                            <label for="state-vgood">Bardzo dobry</label>
+                        </span>
+                        <span>
+                            <input type="checkbox" name="state" id="state-good" checked="<%= filters.state.includes(2) %>">
+                            <label for="state-good">Dobry</label>
+                        </span>
+                        <span>
+                            <input type="checkbox" name="state" id="state-damaged" checked="<%= filters.state.includes(3) %>">
+                            <label for="state-damaged">Zniszczony</label>
+                        </span>
+                    </div>
+
+                    <div class="filter-section price">
+                        <h2>Cena:</h2>
+                        <span>
+                            <input type="number" name="price_min" placeholder="od" value="<%= filters.minPrice %>">
+                            -
+                            <input type="number" name="price_max" placeholder="do" value="<%= filters.maxPrice %>">
+                        </span>
+                    </div>
+
+                    <div class="filter-section state">
+                        <h2>Język:</h2>
+                        <span>
+                            <input type="checkbox" name="language" id="language-english" checked="<%= filters.language.includes(0) %>">
+                            <label for="language-english">Angielski</label>
+                        </span>
+                        <span>
+                            <input type="checkbox" name="language" id="language-polish" checked="<%= filters.language.includes(1) %>">
+                            <label for="language-polish">Polski</label>
+                        </span>
+                    </div>
+                </section>
+
+                <section id="books">
+                    <% books.forEach(book => { %>
+                        <%- include("common/book", {book} )
+                    <% }) %>
+                </section>
+            </div>
+        </main>
+    </body>
+
+    <script>
+        function addToCart(e){
+            console.log("aha")
+
+            e.stopPropagation()
+        }
+
+        function seeProduct(){
+            console.log("prod")
+        }
+
+        function toggleSubcategories(elem){
+            subcategories = elem.querySelector("ul")
+            subcategories.style.display = subcategories.style.display === "block" ? "none" : "block";
+        }
+    </script>
+</html>

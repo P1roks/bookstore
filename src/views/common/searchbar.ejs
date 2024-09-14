@@ -1,0 +1,41 @@
+<nav>
+    <section id="nav-general">
+        <a href="/">
+            <img src="/assets/logo.png" alt="Logo">
+        </a>
+
+        <form action="/search" method="GET" id="search">
+            <input type="text" name="string" placeholder="Wyszukaj..." maxlength="30">
+            <button type="submit">
+                <span class="material-symbols-outlined">
+                    search
+                </span>
+            </button>
+        </form>
+
+        <a id="login" href="/auth">
+            <span class="material-symbols-outlined">
+                person
+            </span>
+            <span class="additional-info">
+                <%= (typeof user !== "undefined" && user.email) ? user.email : "Zaloguj się" %>
+            </span>
+        </a>
+
+        <a id="cart" href="/cart">
+            <span class="material-symbols-outlined">
+                shopping_cart
+            </span>
+            <% if(typeof cart !== "undefined" && cart.items.length > 0) { %>
+                <div id="items-number">
+                    <%= cart.items.length %>
+                </div>
+            <% } %>
+        </a>
+    </section>
+    <section id="nav-categories">
+        <% categories.forEach(category => { %>
+            <a class="nav-category-single" href="/search?category=<%= category.id %>"><span><%= category.name %></span></a>
+        <% }) %>
+    </section>
+</nav>

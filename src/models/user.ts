@@ -1,26 +1,14 @@
 import { Cart } from "./cart"
 
 class User{
-    #id
-    #username
-    #cart
+    private id;
+    private username;
+    private cart;
 
     constructor(id, username){
-        this.#id = id
-        this.#username = username
-        this.#cart = new Cart()
-    }
-
-    get id(){
-        return this.#id
-    }
-
-    get username(){
-        return this.#username
-    }
-
-    get cart(){
-        return this.#cart
+        this.id = id
+        this.username = username
+        this.cart = new Cart()
     }
 
     addToCart(bookId, quantity){

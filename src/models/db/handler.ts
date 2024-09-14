@@ -1,11 +1,29 @@
-export class DatabaseHandler{
-    #database
+import { Database, searchParams } from "../../types"
 
-    constructor(database){
-        this.#database = database
+export class DatabaseHandler{
+    private database: Database
+
+    constructor(database: Database){
+        this.database = database
     }
 
     async checkUserCredentials(email, plainPassword){
+
+    }
+
+    async addBook(book: Book){
+
+    }
+
+    async addUser(email, plainPassword){
+
+    }
+
+    async getRandomBooks(quantity: number){
+
+    }
+
+    async searchBooks(params: searchParams){
 
     }
 }
