@@ -1,4 +1,4 @@
-import { Cart } from "./cart.mjs"
+import { Cart } from "./cart"
 
 class User{
     #id

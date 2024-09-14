@@ -1,13 +1,15 @@
 {
   "name": "ksiegarnia",
   "version": "1.0.0",
-  "main": "./src/index.mjs",
+  "main": "./build/index.js",
   "scripts": {
-    "start": "node ./src/index.mjs",
-    "start:watch": "nodemon --exec node ./src/index.mjs"
+    "start": "node ./build/index.js",
+    "build": "tsc && cp -r ./src/views ./build/",
+    "deploy": "npm run build && npm run start",
+    "dev": "npx tsc-node ./src/index.ts",
+    "dev:watch": "nodemon --exec npx tsc-node ./src/index.ts"
   },
   "author": "P1roks",
-  "description": "",
   "dependencies": {
     "@types/express": "^4.17.21",
     "@types/express-session": "^1.18.0",

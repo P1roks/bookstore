@@ -1,8 +1,8 @@
 import express from 'express';
 import session from 'express-session';
-import storeRouter from './routes/storeRoutes.mjs';
-import authRouter from './routes/authRoutes.mjs';
-import cartRouter from './routes/cartRoutes.mjs';
+import {storeRouter} from './routes/storeRoutes';
+import {authRouter} from './routes/authRoutes';
+import {cartRouter} from './routes/cartRoutes';
 
 const app = express();
 
