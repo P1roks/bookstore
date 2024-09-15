@@ -1,4 +1,4 @@
-import { Pool, createPool } from "mysql2/promise"
+import { Pool, QueryResult, createPool } from "mysql2/promise"
 import { Database, DatabaseConstructorData } from "../../types";
 
 export class SQLDatabase implements Database{
@@ -25,7 +25,8 @@ export class SQLDatabase implements Database{
         const pool = await this.pool.getConnection()
 
         try{
-            return await pool.query(query)
+            const [rows] = await pool.query(query)
+            return rows as unknown[]
         }
         catch(error){
             console.error(error)

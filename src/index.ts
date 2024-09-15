@@ -9,13 +9,7 @@ import {cartRouter} from './routes/cartRoutes';
 import { DatabaseHandler } from './models/db/handler';
 import { SQLDatabase } from './models/db/database';
 
-export let db = new DatabaseHandler(new SQLDatabase({
-    host: "localhost",
-    port: 3306,
-    user: "fakeroot",
-    password: "qwerty"
-}))
-
+export let db: DatabaseHandler;
 const app = express();
 app.use(session({
     secret: "CHANGE_IN_PROD",
@@ -35,8 +29,16 @@ app.use("/", storeRouter)
 app.use("/auth", authRouter)
 app.use("/cart", cartRouter)
 
-const runserver = () => {
+const runserver = async () => {
     let port = 8080;
+    db = await DatabaseHandler.initialize(new SQLDatabase({
+        host: "localhost",
+        port: 3306,
+        user: "fakeroot",
+        password: "qwerty",
+        database: "bookstore",
+    }))
+
 
     app.listen(port, () => {
         console.log(`Serwer działa na adresie: http://localhost:${port}`)
