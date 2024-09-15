@@ -21,7 +21,7 @@ export class SQLDatabase implements Database{
         })
     }
 
-    async query(query: string): Promise<unknown[] | null>{
+    async query(query: string): Promise<unknown[]>{
         const pool = await this.pool.getConnection()
 
         try{
@@ -29,8 +29,8 @@ export class SQLDatabase implements Database{
             return rows as unknown[]
         }
         catch(error){
-            console.error(error)
-            return null
+            console.log(error)
+            throw new Error("SQL Error")
         }
     }
 }

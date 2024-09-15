@@ -16,13 +16,13 @@
                     <div class="filter-section categories">
                         <h2>Kategorie:</h2>
                         <ul>
-                            <% categories.forEach(category => {
-                                <li onClick="toggleSubcategories(this)" class="category">
-                                    <% category.name %>
+                            <% categories.forEach(category => { %>
+                                <li class="category">
+                                    <span onClick="toggleSubcategories(this)"><%= category.name %></span>
                                     <% if(category.subcategories.length) { %>
                                         <ul class="subcategories">
-                                            <% category.subcategories.forEach(subcategory => {
-                                                <%= subcategory.name %>
+                                            <% category.subcategories.forEach(subcategory => { %>
+                                                <li> <%= subcategory %> </li>
                                             <% }) %>
                                         </ul>
                                     <% } %>
@@ -34,19 +34,19 @@
                     <div class="filter-section state">
                         <h2>Stan:</h2>
                         <span>
-                            <input type="checkbox" name="state" id="state-new" checked="<%= filters.state.includes(0) %>">
+                            <input type="checkbox" name="state" id="state-new" <% if(filters.states.includes(0)) { %> <%= "checked" %> <% } %>>
                             <label for="state-new">Nowy</label>
                         </span>
                         <span>
-                            <input type="checkbox" name="state" id="state-vgood" checked="<%= filters.state.includes(1) %>">
+                            <input type="checkbox" name="state" id="state-vgood" checked=<%= filters.states.includes(1) %>>
                             <label for="state-vgood">Bardzo dobry</label>
                         </span>
                         <span>
-                            <input type="checkbox" name="state" id="state-good" checked="<%= filters.state.includes(2) %>">
+                            <input type="checkbox" name="state" id="state-good" checked=<%= filters.states.includes(2) %>>
                             <label for="state-good">Dobry</label>
                         </span>
                         <span>
-                            <input type="checkbox" name="state" id="state-damaged" checked="<%= filters.state.includes(3) %>">
+                            <input type="checkbox" name="state" id="state-damaged" checked=<%= filters.states.includes(3) %>>
                             <label for="state-damaged">Zniszczony</label>
                         </span>
                     </div>
@@ -63,11 +63,11 @@
                     <div class="filter-section state">
                         <h2>Język:</h2>
                         <span>
-                            <input type="checkbox" name="language" id="language-english" checked="<%= filters.language.includes(0) %>">
+                            <input type="checkbox" name="language" id="language-english" checked="<%= filters.languages.includes(0) %>">
                             <label for="language-english">Angielski</label>
                         </span>
                         <span>
-                            <input type="checkbox" name="language" id="language-polish" checked="<%= filters.language.includes(1) %>">
+                            <input type="checkbox" name="language" id="language-polish" checked="<%= filters.languages.includes(1) %>">
                             <label for="language-polish">Polski</label>
                         </span>
                     </div>
@@ -75,27 +75,13 @@
 
                 <section id="books">
                     <% books.forEach(book => { %>
-                        <%- include("common/book", {book} )
+                        <%- include("common/book", {book} ) %>
                     <% }) %>
                 </section>
             </div>
         </main>
     </body>
 
-    <script>
-        function addToCart(e){
-            console.log("aha")
-
-            e.stopPropagation()
-        }
-
-        function seeProduct(){
-            console.log("prod")
-        }
-
-        function toggleSubcategories(elem){
-            subcategories = elem.querySelector("ul")
-            subcategories.style.display = subcategories.style.display === "block" ? "none" : "block";
-        }
-    </script>
+    <script src="/scripts/bookScripts.js"></script>
+    <script src="/scripts/searchScripts.js"></script>
 </html>

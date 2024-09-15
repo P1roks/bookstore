@@ -7,18 +7,21 @@ cartRouter.get("/", (req, res) => {
     res.render("cart", {categories: []})
 })
 
-cartRouter.post("/add", (req, res) => {
+cartRouter.get("/add/:bookId", (req, res) => {
     // add item to cart
+    let bookId = req.params.bookId
 })
 
 cartRouter.post("/quantity", (req, res) => {
     // change quantity of item
+    let { bookId, newQuantity } = req.body
 })
 
-cartRouter.post("/delete", (req, res) => {
-    // delte given item
+cartRouter.get("/delete/:bookId", (req, res) => {
+    // delete given item
+    let bookId = req.params.bookId
 })
 
 cartRouter.get("/buy", (req, res) => {
-    //
+    // simulate buying - remove desired book quantity from DB and empty cart
 })

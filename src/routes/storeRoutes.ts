@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { db } from "..";
 import { DatabaseHandler } from "../models/db/handler";
+import { ConstraintFactory } from "../types";
 
 export const storeRouter = Router()
 
@@ -10,14 +11,22 @@ storeRouter.get("/", async (req, res) => {
     res.render("mainpage", { books, categories: DatabaseHandler.categories, user: undefined, cart: undefined})
 })
 
-storeRouter.get("/search", (req, res) => {
-    // search books page
-    /* let searchParams: SearchParams = {
-        
-    }
-    let books = db.searchBooks(req.query as SearchParams); */
-    throw "errno"
-    res.render("search")
+storeRouter.get("/search", async (req, res) => {
+    let parsedQuery = ConstraintFactory.getSQLConstraints(req.query as any)
+    console.log(parsedQuery)
+    let books = await db.getRandomBooks(20);
+    res.render("search", {
+        books,
+        categories: DatabaseHandler.categories,
+        user: undefined,
+        cart: undefined,
+        filters: {
+            states: [],
+            languages: [],
+            minPrice: 100,
+            maxPrice: undefined,
+        },
+    })
 })
 
 storeRouter.get("/book/:bookId", (req, res) => {

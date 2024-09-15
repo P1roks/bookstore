@@ -1,4 +1,4 @@
-import { Database, CategoryInfo } from "../../types"
+import { Database, CategoryInfo, Book, CategoryWithSubcategories } from "../../types"
 
 export class DatabaseHandler{
     private database: Database
@@ -27,10 +27,24 @@ export class DatabaseHandler{
     }
 
     async getCategories(): Promise<CategoryInfo[]>{
-        return (await this.database.query("SELECT id, name FROM categories")) as CategoryInfo[]
+        return await this.database.query("SELECT id, name FROM categories") as CategoryInfo[]
     }
 
-    async getRandomBooks(quantity: number){
+    async getCategoriesWithSubcategories(): Promise<CategoryWithSubcategories[]>{
+        let results = await this.database.query(`SELECT c.id AS id, c.name AS name, GROUP_CONCAT(sc.name) AS subcategories
+          FROM categories c
+          LEFT JOIN subcategories sc ON c.id = sc.category_id
+          GROUP BY c.id, c.name`)
+        return results.map((res: any): CategoryWithSubcategories => 
+            ({
+               id: res.id,
+               name: res.name,
+               subcategories: res.subcategories ? res.subcategories.split(",") : []
+            })
+        )
+    }
+
+    async getRandomBooks(quantity: number): Promise<Book[]>{
         return (await this.database.query(`
             SELECT
                 b.id,
@@ -49,7 +63,11 @@ export class DatabaseHandler{
             JOIN languages l ON b.language_id = l.id
             ORDER BY RAND()
             LIMIT ${quantity};`)
-        )
+        ) as Book[]
+    }
+
+    async getBookById(): Promise<any> {
+
     }
 
     async searchBooks(){
