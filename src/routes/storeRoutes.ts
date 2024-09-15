@@ -16,6 +16,7 @@ storeRouter.get("/search", (req, res) => {
         
     }
     let books = db.searchBooks(req.query as SearchParams); */
+    throw "errno"
     res.render("search")
 })
 

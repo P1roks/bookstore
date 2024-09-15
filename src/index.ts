@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import session from 'express-session';
 import bodyParser from 'body-parser';
 import * as path from 'path';
@@ -28,6 +28,20 @@ app.set("views", path.join(__dirname, "/views"))
 app.use("/", storeRouter)
 app.use("/auth", authRouter)
 app.use("/cart", cartRouter)
+
+app.use((_req, res, _next) => {
+    res.status(404).render("error",
+        {categories: DatabaseHandler.categories, user: undefined, cart: undefined, errorImage: "/assets/404.png", errorCode: 404, errorDescription: "Not Found!"})
+})
+
+app.use((error: Error, _req: Request, res: Response, next: NextFunction) => {
+    if(res.headersSent){
+        next(error)
+    }
+
+    console.log(`Error: ${error}`)
+    res.status(500).render("error", {categories: [], user: undefined, cart: undefined, errorImage: "/assets/500.png", errorCode: 500, errorDescription: "Internal server Error!"})
+})
 
 const runserver = async () => {
     let port = 8080;
