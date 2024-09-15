@@ -1,0 +1,49 @@
+CREATE TABLE books(
+    id INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    title VARCHAR(50) NOT NULL,
+    author VARCHAR(30) NOT NULL,
+    description text NOT NULL,
+    state ENUM("nowy", "bardzo dobry", "dobry", "zniszczony") NOT NULL,
+    language_id INT UNSIGNED NOT NULL,
+    category_id INT UNSIGNED NOT NULL,
+    quantity INT UNSIGNED NOT NULL,
+    price DECIMAL(6,2) NOT NULL,
+    tome INT UNSIGNED
+);
+
+CREATE TABLE categories(
+    id INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(30) NOT NULL,
+);
+
+CREATE TABLE subcategories(
+    id INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(30) NOT NULL,
+    category_id INT UNSIGNED NOT NULL
+);
+
+CREATE TABLE languages(
+    id INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(20) NOT NULL
+);
+
+CREATE TABLE users(
+    id INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    email VARCHAR(30) NOT NULL,
+    password char(72) NOT NULL
+);
+
+ALTER TABLE books ADD CONSTRAINT fk_category_id FOREIGN KEY(genre_id) REFERENCES genres(id);
+ALTER TABLE subcategories ADD CONSTRAINT fk_genre_id FOREIGN KEY(genre_id) REFERENCES genres(id);
+ALTER TABLE books ADD CONSTRAINT fk_language_id FOREIGN KEY(language_id) REFERENCES languages(id);
+
+/*
+CREATE TABLE cart(
+    id INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    user_id INT UNSIGNED NOT NULL,
+    book_id INT UNSIGNED NOT NULL,
+    quantity INT UNSIGNED NOT NULL
+);
+ALTER TABLE cart ADD CONSTRAINT fk_user_id FOREIGN KEY(user_id) REFERENCES users(id);
+ALTER TABLE cart ADD CONSTRAINT fk_book_id FOREIGN KEY(book_id) REFERENCES books(id);
+*/
