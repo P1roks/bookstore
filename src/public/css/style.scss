@@ -37,12 +37,6 @@ nav{
         align-items: center;
         background-color: $primary;
 
-        & > *{
-            &:not(:first-child){
-                border-left: 2px solid black;
-            }
-        }
-
         img{
             width: 100%;
         }
@@ -64,6 +58,7 @@ nav{
                 border-radius: 20px;
                 outline: none;
                 font-size: 1.5rem;
+                margin-left: 1%;
             }
 
             button{
@@ -161,8 +156,13 @@ main{
             .filter-section{
                 display: flex;
                 flex-direction: column;
-                ul{
-                    list-style-position: inside;
+
+                label, input[type="checkbox"]{
+                    cursor: pointer;
+                }
+
+                input[type="checkbox"]{
+                    accent-color: $secondary;
                 }
             }
 
@@ -172,20 +172,35 @@ main{
             }
 
             .categories{
-
-                .category{
-                    list-style-type: "▼";
+                a{
+                    color: $secondary;
+                    cursor: pointer;
                 }
 
-                .category > .subcategories{
-                    margin-left: 5%;
-                    display: none;
-                    list-style-type: "- ";
+                .selected{
+                    color: $accent;
+                }
+
+                .category{
+                    margin-left: 2%;
+                    list-style-type: none;
+
+                    &:not(.selected):hover{
+                        cursor: pointer;
+                        color: $secondary;
+                    }
                 }
             }
 
             .price input{
                 width: 40%;
+            }
+
+            #filter-button{
+                background-color: $secondary;
+                color: $onSecondary;
+                cursor: pointer;
+                border: none;
             }
         }
     }
@@ -278,12 +293,14 @@ main{
                     label, input[type="text"], input[type="password"]{
                         width: 50%;
                     }
+
                     input[type="checkbox"]{
                         margin-right: 5%;
                         & + label{
                             width: 70%;
                         }
                     }
+
                     button{
                         width: 100%;
                         padding: 2%;
@@ -353,6 +370,7 @@ main{
                 background-color: $secondary;
                 color: $onSecondary;
                 font-size: 1.5rem;
+                cursor: pointer;
             }
 
             img{
@@ -368,6 +386,10 @@ main{
 
             &:hover{
                 box-shadow: 3px 3px 15px 0 rgba(66, 68, 90, 1);
+                cursor: pointer;
+                h1, h3, p{
+                    color: $secondaryLight;
+                }
             }
         }
     }

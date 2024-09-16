@@ -1,3 +1,4 @@
+import mysql from 'mysql2';
 import { Pool, QueryResult, createPool } from "mysql2/promise"
 import { Database, DatabaseConstructorData } from "../../types";
 
@@ -32,4 +33,6 @@ export class SQLDatabase implements Database{
             throw new Error("SQL Error")
         }
     }
+
+    format = (query: string, data: any[]): string => mysql.format(query, data)
 }

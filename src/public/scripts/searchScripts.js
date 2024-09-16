@@ -3,6 +3,20 @@ function toggleSubcategories(elem){
     subcategories.style.display = subcategories.style.display === "block" ? "none" : "block";
 }
 
+function changeQueryParam(key, val){
+    let currentParams = new URLSearchParams(window.location.search)
+    currentParams.set(key, val)
+    window.location.search = `?${currentParams.toString()}`
+}
+
+function removeCategory(){
+    let currentParams = new URLSearchParams(window.location.search)
+    currentParams.delete("subcategory")
+    currentParams.delete("category")
+
+    window.location.search = `?${currentParams.toString()}`
+}
+
 function filterBooks(){
     let currentFilters = new URLSearchParams(window.location.search)
 
@@ -24,9 +38,7 @@ function filterBooks(){
         }
     }
 
-    console.log(currentFilters.toString())
-
-    // window.location.href = `/search?${currentFilters.toString()}`
+    window.location.href = `/search?${currentFilters.toString()}`
 }
 
 function changeCategory(){

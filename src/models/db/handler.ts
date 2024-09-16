@@ -1,5 +1,4 @@
-import { format } from "mysql2";
-import { Database, BookProperty, Book, CategoryWithSubcategories, CategoryInfoFull, BookState } from "../../types"
+import { Database, BookProperty, Book, CategoryInfoFull, BookState } from "../../types"
 
 export class DatabaseHandler{
     private database: Database
@@ -48,10 +47,6 @@ export class DatabaseHandler{
 
     }
 
-    async addBook(book: Book){
-
-    }
-
     async addUser(email, plainPassword){
 
     }
@@ -65,27 +60,13 @@ export class DatabaseHandler{
     }
 
     async getFullCategoryInfo(categoryId: number): Promise<CategoryInfoFull>{
-        let category = (await this.database.query(format("SELECT id, name FROM categories WHERE id = ? LIMIT 1", [categoryId] )))[0] as BookProperty
-        let subcategories = await this.database.query(format("SELECT id, name FROM subcategories WHERE category_id = ?", [categoryId])) as BookProperty[]
+        let category = (await this.database.query(this.database.format("SELECT id, name FROM categories WHERE id = ? LIMIT 1", [categoryId] )))[0] as BookProperty
+        let subcategories = await this.database.query(this.database.format("SELECT id, name FROM subcategories WHERE category_id = ?", [categoryId])) as BookProperty[]
         return {
             id: category.id,
             name: category.name,
             subcategories
         }
-    }
-
-    async getCategoriesWithSubcategories(): Promise<CategoryWithSubcategories[]>{
-        let results = await this.database.query(`SELECT c.id AS id, c.name AS name, GROUP_CONCAT(sc.name) AS subcategories
-          FROM categories c
-          LEFT JOIN subcategories sc ON c.id = sc.category_id
-          GROUP BY c.id, c.name`)
-        return results.map((res: any): CategoryWithSubcategories => 
-            ({
-               id: res.id,
-               name: res.name,
-               subcategories: res.subcategories ? res.subcategories.split(",") : []
-            })
-        )
     }
 
     async getRandomBooks(quantity: number): Promise<Book[]>{
@@ -111,6 +92,7 @@ export class DatabaseHandler{
     }
 
     async getBooksWithConstraint(constraint: string){
+        let whereClause = constraint.length ? `WHERE ${constraint}` : "";
         return (await this.database.query(`
             SELECT
                 books.id,
@@ -127,11 +109,28 @@ export class DatabaseHandler{
             JOIN categories ON books.category_id = categories.id
             JOIN subcategories ON books.subcategory_id = subcategories.id
             JOIN languages ON books.language_id = languages.id
-            WHERE ${constraint};`)
+            ${whereClause};`)
         ) as Book[]
     }
 
-    async getBookById(): Promise<any> {
-
+    async getBookById(id: number): Promise<Book> {
+        return (await this.database.query(`
+            SELECT
+                b.id,
+                b.title,
+                b.author,
+                b.description,
+                c.name AS category,
+                s.name AS subcategory,
+                l.name AS language,
+                b.price,
+                b.tome,
+                b.quantity
+            FROM books b
+            JOIN categories c ON b.category_id = c.id
+            JOIN subcategories s ON b.subcategory_id = s.id
+            JOIN languages l ON b.language_id = l.id
+            WHERE b.id = ${id};`)
+        )[0] as Book
     }
 }

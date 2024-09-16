@@ -16,17 +16,18 @@
                     <div class="filter-section categories">
                         <% if(typeof filters.selectedCategory.subcategories !== "undefined") { %>
                             <h2>Podkategorie <%= filters.selectedCategory.name %>:</h2>
-                            <p>Powrót do <a href="..">Kategorii</a></p>
+                            <p>Powrót do <a onClick="removeCategory()">Kategorii</a></p>
                             <ul>
                                 <% filters.selectedCategory.subcategories.forEach(subcategory => { %>
-                                    <li class="category"><%= subcategory.name %></li>
+                                    <li class="category <% if(subcategory.checked) { %> selected <% } %>"
+                                        onClick="changeQueryParam('subcategory', <%= subcategory.id %>)"><%= subcategory.name %></li>
                                 <% }) %>
                             </ul>
                         <% } else { %>
                             <h2>Kategorie </h2>
                             <ul>
                                 <% filters.selectedCategory.forEach(category => { %>
-                                    <li class="category"><%= category.name %></li>
+                                    <li class="category" onClick="changeQueryParam('category', <%= category.id %>)"><%= category.name %></li>
                                 <% }) %>
                             </ul>
                         <% } %>
@@ -36,8 +37,8 @@
                         <h2>Stan:</h2>
                         <% filters.state.forEach(state => { %>
                             <span>
-                                <input type="checkbox" name="state" id="state-<%= state.name %>" value="<%= state.name %>" <% if(state.checked) { %> checked <% } %>>
-                                <label for="state-<%= state.name %>"><%= state.name %></label>
+                                <input type="checkbox" name="state" id="state-<%= state.id %>" value="<%= state.id %>" <% if(state.checked) { %> checked <% } %>>
+                                <label for="state-<%= state.id %>"><%= state.name %></label>
                             </span>
                         <% }) %>
                     </div>
@@ -45,9 +46,9 @@
                     <div class="filter-section price">
                         <h2>Cena:</h2>
                         <span>
-                            <input type="number" name="min-price" id="min-price" placeholder="od" value="<%= filters.minPrice %>">
+                            <input type="number" name="min-price" id="min-price" placeholder="od" value="<%= filters.minPrice %>" step="0.1">
                             -
-                            <input type="number" name="max-price" id="max-price" placeholder="do" value="<%= filters.maxPrice %>">
+                            <input type="number" name="max-price" id="max-price" placeholder="do" value="<%= filters.maxPrice %>" step="0.1">
                         </span>
                     </div>
 
@@ -55,8 +56,8 @@
                         <h2>Język:</h2>
                         <% filters.language.forEach(language => { %>
                             <span>
-                                <input type="checkbox" name="state" id="state-<%= language.id %>" value="<%= language.id %>" <% if(language.checked) { %> checked <% } %>>
-                                <label for="state-<%= language.id %>"><%= language.name %></label>
+                                <input type="checkbox" name="language" id="language-<%= language.id %>" value="<%= language.id %>" <% if(language.checked) { %> checked <% } %>>
+                                <label for="language-<%= language.id %>"><%= language.name %></label>
                             </span>
                         <% }) %>
                     </div>
