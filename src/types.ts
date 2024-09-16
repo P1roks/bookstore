@@ -1,4 +1,6 @@
 import mysql from 'mysql2';
+import { DatabaseHandler } from './models/db/handler';
+import { db } from '.';
 
 interface SearchParamOptions{
     tableName: string,
@@ -19,14 +21,9 @@ export enum Operation{
     Includes = "LIKE",
 }
 
-export enum State{
-    New = 0,
-    VeryGood = 1,
-    Good = 2,
-    Destroyed = 3,
-}
+export class SearchHandler{
+    private filters: SearchQueryParams
 
-export class ConstraintFactory{
     private static createSearchParam = <T>({ tableName, columnName, operation }: SearchParamOptions): (value: T) => SearchParam<T> => (
         (value: T): SearchParam<T> => ({
               lookupValue: value,
@@ -37,38 +34,38 @@ export class ConstraintFactory{
         })
     )
 
-    private static searchParams: { [key: string]: (value: any) => SearchParam<any> } = {
-        category: ConstraintFactory.createSearchParam<number>({
+    private static searchParams: { [K in keyof Required<SearchQueryParams>]: (value: Required<SearchQueryParams>[K]) => SearchParam<Required<SearchQueryParams>[K]> } = {
+        category: SearchHandler.createSearchParam<number>({
             tableName: "categories",
             columnName: "id",
             operation: Operation.Equal,
         }),
-        title: ConstraintFactory.createSearchParam<string>({
+        title: SearchHandler.createSearchParam<string>({
             tableName: "books",
             columnName: "title",
             operation: Operation.Includes,
         }),
-        subcategory: ConstraintFactory.createSearchParam<number>({
+        subcategory: SearchHandler.createSearchParam<number>({
             tableName: "subcategories",
             columnName: "id",
             operation: Operation.Equal,
         }),
-        language: ConstraintFactory.createSearchParam<number[]>({
+        language: SearchHandler.createSearchParam<number[]>({
             tableName: "languages",
             columnName: "id",
             operation: Operation.Equal,
         }),
-        states: ConstraintFactory.createSearchParam<State[]>({
+        state: SearchHandler.createSearchParam<number[]>({
             tableName: "books",
             columnName: "state",
             operation: Operation.Equal,
         }),
-        minPrice: ConstraintFactory.createSearchParam<number>({
+        minPrice: SearchHandler.createSearchParam<number>({
             tableName: "books",
             columnName: "price",
             operation: Operation.GreaterEqual,
         }),
-        maxPrice: ConstraintFactory.createSearchParam<number>({
+        maxPrice: SearchHandler.createSearchParam<number>({
             tableName: "books",
             columnName: "price",
             operation: Operation.LessEqual,
@@ -88,39 +85,101 @@ export class ConstraintFactory{
         }
     }
     
-    public static getSQLConstraints = (constraints: {value: any}[]): string =>
-        Object.entries(constraints).map(([key, value]) => {
+    private getSQLConstraints(): string{
+        return Object.entries(this.filters).map(([key, value]) => {
             try{
-                return ConstraintFactory.toSQL(
-                    ConstraintFactory.searchParams[key](value)
+                return SearchHandler.toSQL(
+                    SearchHandler.searchParams[key](value)
                 )
             }
             catch{
                 return null
             }
         }).filter(val => val !== null).join(" AND ")
-}
+    }
 
+    constructor(filters: SearchQueryParams){
+        this.filters = filters
+    }
+
+    async getFilteredBooks(): Promise<Book[]>{
+        return await db.getBooksWithConstraint(this.getSQLConstraints()) as Book[]
+    }
+
+    async getFilters(): Promise<Filters>{
+        let filters: Filters = {
+            title: "",
+            state: DatabaseHandler.getStatesObject(),
+            language: DatabaseHandler.getLanguagesObject(),
+            selectedCategory: DatabaseHandler.getCategoriesObject(),
+            minPrice: undefined,
+            maxPrice: undefined,
+        }
+
+        for(const [key, value] of Object.entries(this.filters)){
+            if(key === "maxPrice" || key === "minPrice"){
+                filters[key] = value
+            }
+            else if(key === "category"){
+                filters.selectedCategory = await db.getFullCategoryInfo(value)
+            }
+            else if(filters[key]){
+                if(Array.isArray(value)){
+                    let found = filters[key].filter((field: any) => !value.includes(field.id))
+                    if(found) found.map((f: any) => f.checked = true)
+                }
+                else{
+                    let found = filters[key].find((field: any) => field.id === value)
+                    if(found) found.checked = true
+                }
+            }
+        }
+
+        return filters
+    }
+}
 
 export interface DatabaseConstructorData {
     host: string | undefined, 
     port: number | undefined, 
     user: string | undefined, 
     password: string | undefined, 
-    database?: string
+    database: string
 }
 
 export interface Database{
     query(query: string): Promise<unknown[]>
 }
 
-export interface CategoryInfo{
+export interface BookProperty{
     id: number,
     name: string,
+    checked?: boolean,
 }
 
-export interface CategoryWithSubcategories extends CategoryInfo{
+export interface BookState{
+    name: string,
+    checked: boolean,
+}
+
+export interface CategoryWithSubcategories extends BookProperty{
     subcategories: string[]
+}
+
+export interface CategoryInfoFull{
+    id: number,
+    name: string,
+    subcategories: BookProperty[],
+}
+
+export interface SearchQueryParams{
+    category?: number,
+    subcategory?: number,
+    state?: number[],
+    language?: number[],
+    title?: string,
+    minPrice?: number,
+    maxPrice?: number,
 }
 
 export interface Book{
@@ -134,4 +193,13 @@ export interface Book{
     price: number,
     quantity: number,
     tome: number | null,
+}
+
+export interface Filters{
+    title: string
+    state: BookProperty[],
+    language: BookProperty[],
+    selectedCategory: BookProperty[] | CategoryInfoFull,
+    minPrice: number | undefined,
+    maxPrice: number | undefined,
 }

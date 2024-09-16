@@ -14,63 +14,54 @@
             <div id="filtered-search">
                 <section id="filters">
                     <div class="filter-section categories">
-                        <h2>Kategorie:</h2>
-                        <ul>
-                            <% categories.forEach(category => { %>
-                                <li class="category">
-                                    <span onClick="toggleSubcategories(this)"><%= category.name %></span>
-                                    <% if(category.subcategories.length) { %>
-                                        <ul class="subcategories">
-                                            <% category.subcategories.forEach(subcategory => { %>
-                                                <li> <%= subcategory %> </li>
-                                            <% }) %>
-                                        </ul>
-                                    <% } %>
-                                </li>
-                            <% }) %>
-                        </ul>
+                        <% if(typeof filters.selectedCategory.subcategories !== "undefined") { %>
+                            <h2>Podkategorie <%= filters.selectedCategory.name %>:</h2>
+                            <p>Powrót do <a href="..">Kategorii</a></p>
+                            <ul>
+                                <% filters.selectedCategory.subcategories.forEach(subcategory => { %>
+                                    <li class="category"><%= subcategory.name %></li>
+                                <% }) %>
+                            </ul>
+                        <% } else { %>
+                            <h2>Kategorie </h2>
+                            <ul>
+                                <% filters.selectedCategory.forEach(category => { %>
+                                    <li class="category"><%= category.name %></li>
+                                <% }) %>
+                            </ul>
+                        <% } %>
                     </div>
 
                     <div class="filter-section state">
                         <h2>Stan:</h2>
-                        <span>
-                            <input type="checkbox" name="state" id="state-new" <% if(filters.states.includes(0)) { %> <%= "checked" %> <% } %>>
-                            <label for="state-new">Nowy</label>
-                        </span>
-                        <span>
-                            <input type="checkbox" name="state" id="state-vgood" checked=<%= filters.states.includes(1) %>>
-                            <label for="state-vgood">Bardzo dobry</label>
-                        </span>
-                        <span>
-                            <input type="checkbox" name="state" id="state-good" checked=<%= filters.states.includes(2) %>>
-                            <label for="state-good">Dobry</label>
-                        </span>
-                        <span>
-                            <input type="checkbox" name="state" id="state-damaged" checked=<%= filters.states.includes(3) %>>
-                            <label for="state-damaged">Zniszczony</label>
-                        </span>
+                        <% filters.state.forEach(state => { %>
+                            <span>
+                                <input type="checkbox" name="state" id="state-<%= state.name %>" value="<%= state.name %>" <% if(state.checked) { %> checked <% } %>>
+                                <label for="state-<%= state.name %>"><%= state.name %></label>
+                            </span>
+                        <% }) %>
                     </div>
 
                     <div class="filter-section price">
                         <h2>Cena:</h2>
                         <span>
-                            <input type="number" name="price_min" placeholder="od" value="<%= filters.minPrice %>">
+                            <input type="number" name="min-price" id="min-price" placeholder="od" value="<%= filters.minPrice %>">
                             -
-                            <input type="number" name="price_max" placeholder="do" value="<%= filters.maxPrice %>">
+                            <input type="number" name="max-price" id="max-price" placeholder="do" value="<%= filters.maxPrice %>">
                         </span>
                     </div>
 
-                    <div class="filter-section state">
+                    <div class="filter-section language">
                         <h2>Język:</h2>
-                        <span>
-                            <input type="checkbox" name="language" id="language-english" checked="<%= filters.languages.includes(0) %>">
-                            <label for="language-english">Angielski</label>
-                        </span>
-                        <span>
-                            <input type="checkbox" name="language" id="language-polish" checked="<%= filters.languages.includes(1) %>">
-                            <label for="language-polish">Polski</label>
-                        </span>
+                        <% filters.language.forEach(language => { %>
+                            <span>
+                                <input type="checkbox" name="state" id="state-<%= language.id %>" value="<%= language.id %>" <% if(language.checked) { %> checked <% } %>>
+                                <label for="state-<%= language.id %>"><%= language.name %></label>
+                            </span>
+                        <% }) %>
                     </div>
+
+                    <button id="filter-button" onClick="filterBooks()">Filtruj</button>
                 </section>
 
                 <section id="books">

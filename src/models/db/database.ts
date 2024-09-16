@@ -22,10 +22,9 @@ export class SQLDatabase implements Database{
     }
 
     async query(query: string): Promise<unknown[]>{
-        const pool = await this.pool.getConnection()
 
         try{
-            const [rows] = await pool.query(query)
+            const [rows] = await this.pool.query(query)
             return rows as unknown[]
         }
         catch(error){

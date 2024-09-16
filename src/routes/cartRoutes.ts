@@ -1,10 +1,11 @@
 import { Router } from "express";
+import { DatabaseHandler } from "../models/db/handler";
 
 export const cartRouter = Router()
 
 cartRouter.get("/", (req, res) => {
     // get all items in the current cart
-    res.render("cart", {categories: []})
+    res.render("cart", {categories: DatabaseHandler.getCategoriesObject()})
 })
 
 cartRouter.get("/add/:bookId", (req, res) => {

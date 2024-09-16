@@ -31,7 +31,7 @@ app.use("/cart", cartRouter)
 
 app.use((_req, res, _next) => {
     res.status(404).render("error",
-        {categories: DatabaseHandler.categories, user: undefined, cart: undefined, errorImage: "/assets/404.png", errorCode: 404, errorDescription: "Not Found!"})
+        {categories: DatabaseHandler.getCategoriesObject(), user: undefined, cart: undefined, errorImage: "/assets/404.png", errorCode: 404, errorDescription: "Nie znaleziono podanej podstrony"})
 })
 
 app.use((error: Error, _req: Request, res: Response, next: NextFunction) => {
@@ -40,7 +40,7 @@ app.use((error: Error, _req: Request, res: Response, next: NextFunction) => {
     }
 
     console.log(`Error: ${error}`)
-    res.status(500).render("error", {categories: [], user: undefined, cart: undefined, errorImage: "/assets/500.png", errorCode: 500, errorDescription: "Internal server Error!"})
+    res.status(500).render("error", {categories: [], user: undefined, cart: undefined, errorImage: "/assets/500.png", errorCode: 500, errorDescription: "Wewnętrzny błąd serwera"})
 })
 
 const runserver = async () => {

@@ -153,7 +153,9 @@ main{
             flex-direction: column;
             gap: 1%;
             background-color: $primary;
-            width: 15%;
+            padding: 2%;
+
+            width: 20%;
             color: $onPrimary;
 
             .filter-section{
