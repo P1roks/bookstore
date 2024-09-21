@@ -15,7 +15,7 @@
 
                 <div id="login">
                     <h1>Zaloguj się:</h1>
-                    <form action="/login" method="POST">
+                    <form action="/auth/login" method="POST">
                         <span>
                             <label for="login-email">E-mail:</label>
                             <input type="text" name="email" id="email">
@@ -26,6 +26,12 @@
                             <input type="password" name="password" id="password">
                         </span>
 
+                        <% if(typeof loginError !== "undefined") { %>
+                        <p class="auth-error">
+                            <%= loginError %>
+                        </p>
+                        <% } %>
+
                         <span>
                             <button type="submit">Zaloguj się</button>
                         </span>
@@ -34,7 +40,7 @@
 
                 <div id="register">
                     <h1>Nie masz konta? Zarejestruj się:</h1>
-                    <form action="/register" method="POST">
+                    <form action="/auth/register" method="POST">
                         
                         <span>
                             <label for="email">E-mail:</label>
@@ -47,14 +53,20 @@
                         </span>
 
                         <span>
-                            <label for="register-password-repeat">Powtórz hasło:</label>
-                            <input type="password" name="password-repeat" id="password-repeat">
+                            <label for="passwordRepeat">Powtórz hasło:</label>
+                            <input type="password" name="passwordRepeat" id="passwordRepeat">
                         </span>
 
                         <span>
                             <input type="checkbox" name="terms" id="terms">
                             <label for="terms">*Akceptuje warunki użytkowania</label>
                         </span>
+
+                        <% if(typeof registerError !== "undefined") { %>
+                        <p class="auth-error">
+                            <%= registerError %>
+                        </p>
+                        <% } %>
 
                         <span>
                             <button type="submit">Zarejestruj się</button>

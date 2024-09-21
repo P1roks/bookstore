@@ -10,12 +10,21 @@
     "dev:watch": "nodemon --exec npx ts-node ./src/index.ts"
   },
   "author": "P1roks",
-  "dependencies": {
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
     "@types/ejs": "^3.1.5",
     "@types/express": "^4.17.21",
     "@types/express-session": "^1.18.0",
+    "nodemon": "^3.1.7",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.2"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "dotenv": "^16.4.5",
     "ejs": "^3.1.10",
     "express": "^4.20.0",
+    "express-rate-limit": "^7.4.0",
     "express-session": "^1.18.0",
     "mysql2": "^3.11.1"
   }

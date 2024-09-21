@@ -15,8 +15,8 @@ export interface Filters{
 export interface SearchQueryParams{
     category?: number,
     subcategory?: number,
-    state?: number[],
-    language?: number[],
+    state?: number[] | number,
+    language?: number[] | number,
     title?: string,
     minPrice?: number,
     maxPrice?: number,
@@ -70,12 +70,12 @@ export class SearchHandler{
             columnName: "id",
             operation: Operation.Equal,
         }),
-        language: SearchHandler.createSearchParam<number[]>({
+        language: SearchHandler.createSearchParam<number[] | number>({
             tableName: "languages",
             columnName: "id",
             operation: Operation.Equal,
         }),
-        state: SearchHandler.createSearchParam<number[]>({
+        state: SearchHandler.createSearchParam<number[] | number>({
             tableName: "books",
             columnName: "state",
             operation: Operation.Equal,

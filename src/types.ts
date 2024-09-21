@@ -1,9 +1,11 @@
-export interface DatabaseConstructorData {
+import express from 'express';
+
+export interface SQLDatabaseSettings {
     host: string | undefined, 
     port: number | undefined, 
     user: string | undefined, 
     password: string | undefined, 
-    database: string
+    database: string | undefined
 }
 
 export interface Database{
@@ -41,3 +43,31 @@ export interface Book{
     tome: number | null,
 }
 
+export interface User{
+    email: string
+}
+
+export interface AuthRequest<ReqBody = any> extends express.Request<{}, {}, ReqBody>{
+    loginError?: string,
+    registerError?: string
+}
+
+// object used internally in backend
+export interface LoginUser{
+    email: string,
+    plainPassword: string
+}
+
+// object send in by form to backend
+export interface LoginUserTransfer{
+    email: string,
+    password: string
+}
+
+// object send in by form to backend
+export interface RegisterUserTransfer{
+    email: string,
+    password: string,
+    passwordRepeat: string,
+    terms?: "on",
+}

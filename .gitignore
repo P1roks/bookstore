@@ -5,3 +5,4 @@ src/**/*.css
 src/**/*.css.map
 **/.css.map
 build
+.env

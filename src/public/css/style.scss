@@ -1,4 +1,12 @@
-@import "variables.scss";
+$primary: #222222;
+$primaryDark: #0A0A0D; 
+$onPrimary: #FFFFFF;
+$secondary: #A63272;
+$secondaryDark: #73224F;
+$secondaryLight: #D93D93;
+$onSecondary: #FFFFFF;
+$accent: #b81237;
+$onAccent: #FFFFFF;
 
 *{
     box-sizing: border-box;
@@ -135,6 +143,30 @@ main{
     background-color: $primaryDark;
     margin: 2% 10%;
 
+    .item-quantity{
+        display: flex;
+        border: 1px solid black;
+        margin: 0 5%;
+
+        & > *{
+            padding: 2%;
+        }
+
+        input[type="number"]{
+            width: 40%;
+            flex-grow: 1;
+            text-align: center;
+            border: 0;
+            outline: none;
+        }
+
+        button{
+            width: 20%;
+            background-color: white;
+            border: 0;
+        }
+    }
+
     #filtered-search{
         display: flex;
         gap: 5%;
@@ -207,9 +239,9 @@ main{
 
     #cart{
         display: grid;
-        grid-template-columns: 2fr 5fr 1.5fr 2fr;
         gap: 2%;
         color: $onPrimary;
+        max-width: 30vw;
 
         #cart-items-container{
             background-color: $primary;
@@ -278,12 +310,26 @@ main{
         display: grid;
         margin-top: 5%;
         gap: 1%;
-        grid-template-columns: .75fr 1fr 1fr .75fr;
+        grid-template-columns: 1fr 1fr;
         color: $onPrimary;
 
+        #login{
+            margin-left: auto;
+        }
+
+        #register{
+            margin-right: auto;
+        }
+
         #login, #register{
+            max-width: 30vw;
             background-color: $primary;
             padding: 15%;
+
+            .auth-error{
+                color: red;
+            }
+
             form{
                 display: flex;
                 flex-direction: column;
@@ -311,14 +357,6 @@ main{
                     }
                 }
             }
-        }
-
-        #login{
-            grid-column: 2;
-        }
-
-        #register{
-            grid-column: 3;
         }
     }
 
@@ -391,6 +429,28 @@ main{
                     color: $secondaryLight;
                 }
             }
+        }
+    }
+
+    #book-details{
+        color: $onPrimary;
+        display: grid;
+        grid-template-columns: 1fr 3fr 1fr;
+
+        & > *{
+            background-color: $primary;
+        }
+
+        #book-image{
+
+        }
+
+        #book-info{
+
+        }
+
+        #book-cart-options{
+            margin-left: 5%;
         }
     }
 }

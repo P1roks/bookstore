@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pl">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Mnich</title>
+        <link href="/css/style.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    </head>
+    <body>
+        <%- include("common/searchbar", {categories, user, cart}) %>
+
+        <% let {id, image, title, author, state, price, quantity, language, category, description} = book %>
+        <main>
+            <section id="book-details">
+                <span id="book-image">
+                    <img src="<%= typeof image === 'undefined' ? '/assets/missing_cover.png' : image %>" alt="cover">
+                </span>
+
+                <span id="book-info">
+                    <h1><%= title %></h1>
+                    <h4><%= author %></h4>
+                    <h4>stan: <%= state %></h4>
+                    <h4>język: <%= language %></h4>
+                    <h4>kategoria: <%= category %></h4>
+                    <p><%= description %></p>
+                </span>
+
+                <span id="book-cart-options">
+                    <h3><%= price %>zł</h3>
+                    <input type="hidden" name="id" value="<%= id %>">
+                    <div class="item-quantity">
+                        <button>+</button>
+                        <input type="number" name="quantity" class="no-spin" min="1" value="1" max="<%= quantity %>">
+                        <button>-</button>
+                    </div>
+                    <p>Dostępnych <%= quantity %> sztuk</p>
+                    <button type="submit">Dodaj do koszyka</button>
+                </span>
+            </section>
+        </main>
+    </body>
+
+    <script src="/scripts/bookScripts.js"></script>
+</html>

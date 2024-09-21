@@ -1,11 +1,11 @@
 import mysql from 'mysql2';
-import { Pool, QueryResult, createPool } from "mysql2/promise"
-import { Database, DatabaseConstructorData } from "../../types";
+import { Pool, createPool } from "mysql2/promise"
+import { Database, SQLDatabaseSettings } from "../../types";
 
 export class SQLDatabase implements Database{
     private pool: Pool;
 
-    constructor(data: DatabaseConstructorData){
+    constructor(data: SQLDatabaseSettings){
         const { host, port, user, password, database } = data;
 
         if(!database) throw new Error("database must be specified")
@@ -23,15 +23,8 @@ export class SQLDatabase implements Database{
     }
 
     async query(query: string): Promise<unknown[]>{
-
-        try{
-            const [rows] = await this.pool.query(query)
-            return rows as unknown[]
-        }
-        catch(error){
-            console.log(error)
-            throw new Error("SQL Error")
-        }
+        const [rows] = await this.pool.query(query)
+        return rows as unknown[]
     }
 
     format = (query: string, data: any[]): string => mysql.format(query, data)

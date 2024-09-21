@@ -2,9 +2,9 @@
 pkgs.mkShell {
   buildInputs = with pkgs; [
     nodejs_20
-    typescript
     mariadb
-    nodePackages.ts-node
-    nodePackages.nodemon
+    # typescript
+    # nodePackages.ts-node
+    # nodePackages.nodemon
   ];
 }

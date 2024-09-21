@@ -1,4 +1,5 @@
-import { Database, BookProperty, Book, CategoryInfoFull, BookState } from "../../types"
+import { Database, BookProperty, Book, CategoryInfoFull, LoginUser, User } from "../../types"
+import bcrypt from 'bcrypt';
 
 export class DatabaseHandler{
     private database: Database
@@ -28,27 +29,50 @@ export class DatabaseHandler{
         }
     ]
 
-    public static readonly getCategoriesObject = () => JSON.parse(JSON.stringify(DatabaseHandler._categories))
-    public static readonly getStatesObject = () => JSON.parse(JSON.stringify(DatabaseHandler._states))
-    public static readonly getLanguagesObject = () => JSON.parse(JSON.stringify(DatabaseHandler._languages))
+    public static readonly getCategoriesObject = () => structuredClone(DatabaseHandler._categories)
+    public static readonly getStatesObject = () => structuredClone(DatabaseHandler._states)
+    public static readonly getLanguagesObject = () => structuredClone(DatabaseHandler._languages)
 
-    constructor(database: Database){
+    // Use DatabaseHandler.setup instead of normal constructor
+    private constructor(database: Database){
         this.database = database
     }
 
-    static async initialize(database: Database): Promise<DatabaseHandler>{
+    static async setup(database: Database): Promise<DatabaseHandler>{
         const handler = new DatabaseHandler(database);
         DatabaseHandler._categories = await handler.getCategories()
         DatabaseHandler._languages = await handler.getLanguages()
         return handler
     }
 
-    async checkUserCredentials(email, plainPassword){
-
+    async getUser(email: string): Promise<User>
+    async getUser(id: number): Promise<User>
+    async getUser(data: string | number): Promise<User>{
+        switch(typeof data){
+            case "string":
+                return (await this.database.query(this.database.format("SELECT email FROM users WHERE email = ?", [data])) as User[])[0]
+            case "number":
+                return (await this.database.query(this.database.format("SELECT email FROM users WHERE id = ?", [data])) as User[])[0]
+            default:
+                throw new Error(`Wrong type provided to getUser function! Provided type: ${typeof data}`)
+        }
     }
 
-    async addUser(email, plainPassword){
+    async checkUserCredentials({email, plainPassword}: LoginUser): Promise<boolean>{
+        try{
+            const maybeUser = await this.database.query(this.database.format("SELECT password FROM users WHERE email = ?", [email])) as {password: string}[]
+            const savedPassword = maybeUser[0]?.password
+            return await bcrypt.compare(plainPassword, savedPassword)
+        }
+        catch(error){
+            // user not found
+            return false
+        }
+    }
 
+    async addUser({email, plainPassword}: LoginUser): Promise<number>{
+        const hashed = await bcrypt.hash(plainPassword, 10)
+        return (await this.database.query(this.database.format("INSERT INTO users(email, password) VALUES(?, ?)", [email, hashed])) as any).insertId
     }
 
     async getCategories(): Promise<BookProperty[]>{
@@ -76,6 +100,7 @@ export class DatabaseHandler{
                 b.title,
                 b.author,
                 b.description,
+                b.state,
                 c.name AS category,
                 s.name AS subcategory,
                 l.name AS language,
@@ -99,6 +124,7 @@ export class DatabaseHandler{
                 books.title,
                 books.author,
                 books.description,
+                books.state,
                 categories.name AS category,
                 subcategories.name AS subcategory,
                 languages.name AS language,
@@ -120,6 +146,7 @@ export class DatabaseHandler{
                 b.title,
                 b.author,
                 b.description,
+                b.state,
                 c.name AS category,
                 s.name AS subcategory,
                 l.name AS language,
