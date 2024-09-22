@@ -3,20 +3,20 @@ import { db } from ".."
 import { Book, BookProperty, CategoryInfoFull } from "../types"
 import { DatabaseHandler } from './db/handler';
 
-export interface Filters{
+interface Filters{
     title: string
     state: BookProperty[],
     language: BookProperty[],
     selectedCategory: BookProperty[] | CategoryInfoFull,
-    minPrice: number | undefined,
-    maxPrice: number | undefined,
+    minPrice: number | null,
+    maxPrice: number | null,
 }
 
 export interface SearchQueryParams{
     category?: number,
     subcategory?: number,
-    state?: number[] | number,
-    language?: number[] | number,
+    state?: number[],
+    language?: number[],
     title?: string,
     minPrice?: number,
     maxPrice?: number,
@@ -28,7 +28,7 @@ interface SearchParamMetaData{
     operation: Operation,
 }
 
-export enum Operation{
+enum Operation{
     Equal = "=",
     Greater = ">",
     GreaterEqual = ">=",
@@ -42,15 +42,19 @@ interface SQLSearchParam<T> extends SearchParamMetaData{
 }
 
 export class SearchHandler{
+    // provided via req.query
     private filters: SearchQueryParams
+
+    constructor(filters: SearchQueryParams){
+        this.filters = filters
+    }
 
     private static createSearchParam = <T>({ tableName, columnName, operation }: SearchParamMetaData): (value: T) => SQLSearchParam<T> => (
         (value: T): SQLSearchParam<T> => ({
               lookupValue: value,
               tableName,
               columnName,
-              // only include operation if it exists
-              ...(operation && {operation}),
+              operation,
         })
     )
 
@@ -70,12 +74,12 @@ export class SearchHandler{
             columnName: "id",
             operation: Operation.Equal,
         }),
-        language: SearchHandler.createSearchParam<number[] | number>({
+        language: SearchHandler.createSearchParam<number[]>({
             tableName: "languages",
             columnName: "id",
             operation: Operation.Equal,
         }),
-        state: SearchHandler.createSearchParam<number[] | number>({
+        state: SearchHandler.createSearchParam<number[]>({
             tableName: "books",
             columnName: "state",
             operation: Operation.Equal,
@@ -92,6 +96,7 @@ export class SearchHandler{
         })
     }
 
+    // convert each SQLSearchParam to corresponding SQL code
     private static toSQL = (param: SQLSearchParam<any>): string => {
         if(!Array.isArray(param.lookupValue)){
             if(param.operation === Operation.Includes){
@@ -105,12 +110,11 @@ export class SearchHandler{
         }
     }
     
+    // convert all defined params to SQL code and merge them with AND statements
     private getSQLConstraints(): string{
         return Object.entries(this.filters).map(([key, value]) => {
             try{
-                return SearchHandler.toSQL(
-                    SearchHandler.searchParams[key](value)
-                )
+                return SearchHandler.toSQL(SearchHandler.searchParams[key](value))
             }
             catch{
                 return null
@@ -118,55 +122,49 @@ export class SearchHandler{
         }).filter(val => val !== null).join(" AND ")
     }
 
-    constructor(filters: SearchQueryParams){
-        this.filters = filters
-    }
-
+    // filter books according to provided params
     async getFilteredBooks(): Promise<Book[]>{
         return await db.getBooksWithConstraint(this.getSQLConstraints()) as Book[]
     }
 
-    async getFilters(): Promise<Filters>{
-        let filters: Filters = {
+    // generate sidebar filters state, so they can stay filled in between site reloads
+    async getFiltersState(): Promise<Filters>{
+        const filtersState: Filters = {
             title: "",
             state: DatabaseHandler.getStatesObject(),
             language: DatabaseHandler.getLanguagesObject(),
             selectedCategory: DatabaseHandler.getCategoriesObject(),
-            minPrice: undefined,
-            maxPrice: undefined,
+            minPrice: null,
+            maxPrice: null,
         }
 
         for(const [key, value] of Object.entries(this.filters)){
-            if(key === "maxPrice" || key === "minPrice"){
-                filters[key] = value
-            }
-            else if(key === "category"){
-                filters.selectedCategory = await db.getFullCategoryInfo(value)
+            // if at least category is selected, get its info and try changing to selecterd subcategory, if it exists
+            if(key === "category"){
+                filtersState.selectedCategory = await db.getFullCategoryInfo(value)
 
-                let subcategory = this.filters["subcategory"]
+                const subcategory = this.filters["subcategory"]
                 if(subcategory){
-                    let subIndex = filters.selectedCategory.subcategories.findIndex(sub => sub.id === subcategory)
+                    const subIndex = filtersState.selectedCategory.subcategories.findIndex(sub => sub.id === subcategory)
                     if(subIndex !== -1){
-                        filters.selectedCategory.subcategories[subIndex].checked = true;
+                        filtersState.selectedCategory.subcategories[subIndex].checked = true;
                         // Always display selected subcategory as the first item
-                        let temp = filters.selectedCategory.subcategories[0]
-                        filters.selectedCategory.subcategories[0] = filters.selectedCategory.subcategories[subIndex]
-                        filters.selectedCategory.subcategories[subIndex] = temp
+                        const temp = filtersState.selectedCategory.subcategories[0]
+                        filtersState.selectedCategory.subcategories[0] = filtersState.selectedCategory.subcategories[subIndex]
+                        filtersState.selectedCategory.subcategories[subIndex] = temp
                     }
                 }
             }
-            else if(filters[key]){
-                if(Array.isArray(value)){
-                    let found = filters[key].filter((field: any) => value.includes(field.id))
-                    if(found) found.map((f: any) => f.checked = true)
-                }
-                else{
-                    let found = filters[key].find((field: any) => field.id === value)
-                    if(found) found.checked = true
-                }
+            // if the value is multi-choice (i.e. array) then mark all present values as selected
+            else if(Object.hasOwn(filtersState, key) && Array.isArray(value)){
+                filtersState[key].filter((field: BookProperty) => value.includes(field.id)).map((f: BookProperty) => f.checked = true)
+            }
+            // if value exists, set corresponding filter to it
+            else if(Object.hasOwn(filtersState, key)){
+                filtersState[key] = value
             }
         }
 
-        return filters
+        return filtersState
     }
 }

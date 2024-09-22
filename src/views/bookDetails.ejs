@@ -10,7 +10,7 @@
     <body>
         <%- include("common/searchbar", {categories, user, cart}) %>
 
-        <% let {id, image, title, author, state, price, quantity, language, category, description} = book %>
+        <% let {id, image, title, author, state, price, quantity, language, category, description, tome} = book %>
         <main>
             <section id="book-details">
                 <span id="book-image">
@@ -18,11 +18,12 @@
                 </span>
 
                 <span id="book-info">
-                    <h1><%= title %></h1>
-                    <h4><%= author %></h4>
-                    <h4>stan: <%= state %></h4>
-                    <h4>język: <%= language %></h4>
-                    <h4>kategoria: <%= category %></h4>
+                    <h1 id="title"><%= title %></h1>
+                    <h2 id="author"><%= author %></h4>
+                    <h4 class="">stan: <%= state %></h4>
+                    <h4 class="">język: <%= language %></h4>
+                    <h4 class="">kategoria: <%= category %></h4>
+                    <% if(tome !== null) { %> <h4>Tom: <%= tome %> </h4> <% } %>
                     <p><%= description %></p>
                 </span>
 

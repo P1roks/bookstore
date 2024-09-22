@@ -1,8 +1,8 @@
 import { Request, Router } from "express";
-import { db, pageNotFound } from "..";
+import { db } from "..";
 import { DatabaseHandler } from "../models/db/handler";
 import { SearchHandler, SearchQueryParams } from "../models/search-handler";
-import { toNumber, toNumberArray } from "../utils";
+import { toNumber, toNumberArray, wrapArray } from "../utils";
 
 export const storeRouter = Router()
 
@@ -17,26 +17,26 @@ storeRouter.get("/", async (req, res, next) => {
     }
 })
 
-storeRouter.get("/book/:bookId", async (req, res) => {
+storeRouter.get("/book/:bookId", async (req, res, next) => {
     // display info about given book
     const bookId = parseInt(req.params.bookId, 10)
-    if(isNaN(bookId)){
-        return pageNotFound(req, res)
+
+    if(!isNaN(bookId)){
+        try{
+            const book = await db.getBookById(bookId)
+            if(book){
+                return res.render("bookDetails", {
+                    book,
+                    categories: DatabaseHandler.getCategoriesObject(),
+                    user: req.session.user,
+                    cart: undefined
+                })
+            }
+        }
+        catch{} // book not found, display 404
     }
 
-    try{
-        const book = await db.getBookById(bookId)
-        if(!book) return pageNotFound(req, res)
-        res.render("bookDetails", {
-            book,
-            categories: DatabaseHandler.getCategoriesObject(),
-            user: req.session.user,
-            cart: undefined
-        })
-    }
-    catch(error){
-        return pageNotFound(req, res)
-    }
+    next() // 404
 })
 
 storeRouter.get("/search", (req, _, next) => {
@@ -44,8 +44,8 @@ storeRouter.get("/search", (req, _, next) => {
     const validKeys: { [key in keyof SearchQueryParams]: (value: any) => SearchQueryParams[key] | undefined } = {
         category: toNumber,
         subcategory: toNumber,
-        state: value => Array.isArray(value) ? toNumberArray(value) : toNumber(value),
-        language: value => Array.isArray(value) ? toNumberArray(value) : toNumber(value),
+        state: value => Array.isArray(value) ? toNumberArray(value) : wrapArray(toNumber(value)),
+        language: value => Array.isArray(value) ? toNumberArray(value) : wrapArray(toNumber(value)),
         title: value => value,
         minPrice: toNumber,
         maxPrice: toNumber,
@@ -55,7 +55,7 @@ storeRouter.get("/search", (req, _, next) => {
 
     for (const [key, val] of Object.entries(req.query)) {
         if (key in validKeys) {
-            let converted = validKeys[key](val)
+            const converted = validKeys[key](val)
             if(converted){
                 result[key] = converted
             }
@@ -69,7 +69,7 @@ storeRouter.get("/search", (req, _, next) => {
     try {
         const handler = new SearchHandler(req.query);
         let books = await handler.getFilteredBooks()
-        let filters = await handler.getFilters()
+        let filters = await handler.getFiltersState()
         res.render("search", {
             books,
             categories: DatabaseHandler.getCategoriesObject(),

@@ -42,19 +42,14 @@ app.use("/", storeRouter)
 app.use("/auth", authRouter)
 app.use("/cart", cartRouter)
 
-export const pageNotFound = (req: Request, res: Response) => {
-    res.status(404).render("error",
-    {
-        categories: DatabaseHandler.getCategoriesObject(),
-        user: req.session.user,
-        cart: undefined,
-        errorImage: "/assets/404.png",
-        errorCode: 404,
-        errorDescription: "Nie znaleziono podanej podstrony"
-    })
-}
-
-app.use(pageNotFound)
+app.use((req, res) => res.status(404).render("error", {
+    categories: DatabaseHandler.getCategoriesObject(),
+    user: req.session.user,
+    cart: undefined,
+    errorImage: "/assets/404.png",
+    errorCode: 404,
+    errorDescription: "Nie znaleziono podanej podstrony"
+}))
 
 app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
     if(res.headersSent){
