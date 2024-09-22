@@ -1,26 +1,44 @@
-import { Router } from "express";
+import { Request, Router } from "express";
 import { DatabaseHandler } from "../models/db/handler";
+import { BookCartTransfer } from "../types";
+import { db } from "..";
+import { genSummary } from "../utils";
 
 export const cartRouter = Router()
 
-cartRouter.get("/", (req, res) => {
+cartRouter.get("/", async (req, res) => {
     // get all items in the current cart
-    res.render("cart", {categories: DatabaseHandler.getCategoriesObject()})
+    const cartItems = await db.getCartItems(req.session.cart)
+    const summary = genSummary(cartItems)
+
+    res.render("cart", {categories: DatabaseHandler.getCategoriesObject(), cart: req.session.cart, user: req.session.user, cartItems, summary})
 })
 
-cartRouter.get("/add/:bookId", (req, res) => {
+cartRouter.post("/add", async (req: Request<{}, {}, BookCartTransfer>, res) => {
     // add item to cart
-    let bookId = req.params.bookId
+    const bookId = parseInt(req.body.bookId, 10)
+    const quantity = req.body.quantity ? parseInt(req.body.quantity, 10) : 1
+    if(!isNaN(bookId)){
+        const book = await db.getBookById(bookId)
+        if(book){
+            if(!req.session.cart){
+                req.session.cart = {items: {}}
+            }
+            req.session.cart.items[bookId] = quantity
+        }
+    }
+    res.redirect("/")
 })
 
 cartRouter.post("/quantity", (req, res) => {
     // change quantity of item
-    let { bookId, newQuantity } = req.body
+    res.send(req.body)
 })
 
-cartRouter.get("/delete/:bookId", (req, res) => {
+cartRouter.post("/delete", (req: Request<{}, {}, BookCartTransfer>, res) => {
     // delete given item
-    let bookId = req.params.bookId
+    if(req.session.cart) delete req.session.cart.items[req.body.bookId]
+    res.redirect("/cart")
 })
 
 cartRouter.get("/buy", (req, res) => {

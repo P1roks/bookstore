@@ -10,7 +10,7 @@ storeRouter.get("/", async (req, res, next) => {
     // front page, display random books
     try {
         const books = await db.getRandomBooks(20);
-        res.render("mainpage", { books, categories: DatabaseHandler.getCategoriesObject(), user: req.session.user, cart: undefined})
+        res.render("mainpage", { books, categories: DatabaseHandler.getCategoriesObject(), user: req.session.user, cart: req.session.cart})
     }
     catch(error){
         next(error)
@@ -29,7 +29,7 @@ storeRouter.get("/book/:bookId", async (req, res, next) => {
                     book,
                     categories: DatabaseHandler.getCategoriesObject(),
                     user: req.session.user,
-                    cart: undefined
+                    cart: req.session.cart
                 })
             }
         }
@@ -74,7 +74,7 @@ storeRouter.get("/search", (req, _, next) => {
             books,
             categories: DatabaseHandler.getCategoriesObject(),
             user: req.session.user,
-            cart: undefined,
+            cart: req.session.cart,
             filters,
         })
     }

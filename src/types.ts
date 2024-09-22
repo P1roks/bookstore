@@ -71,3 +71,25 @@ export interface RegisterUserTransfer{
     passwordRepeat: string,
     terms?: "on",
 }
+
+export interface Cart{
+    items: { [bookId: number]: number } // cart.items[bookId] = quantity
+}
+
+export interface BookCartTransfer{
+    bookId: string,
+    quantity?: string,
+}
+
+export interface CartItem{
+    id: number,
+    title: string,
+    price: number,
+    quantity: number,
+}
+
+export interface CartSummary{
+    totalPrice: number,
+    discountPercentage: number,
+    finalPrice: number,
+}

@@ -5,5 +5,8 @@
     <h3 class="author"><%= author %></h3>
     <p class="state"><%= state %></p>
     <p class="price"><%= price %>zł</p>
-    <button class="add-to-cart" onClick="addToCart(event, <%= id %>)"> Do koszyka </button>
+    <form action="/cart/add" method="POST">
+        <input type="hidden" name="bookId" value="<%= id %>">
+        <button type="submit" class="add-to-cart">Do koszyka</button>
+    </form>
 </div>

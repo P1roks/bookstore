@@ -10,7 +10,7 @@ const authPage = (req: AuthRequest, res: Response) => {
     res.render("auth", {
         categories: DatabaseHandler.getCategoriesObject(),
         user: req.session.user,
-        cart: undefined,
+        cart: req.session.cart,
         loginError: req.loginError,
         registerError: req.registerError
     })

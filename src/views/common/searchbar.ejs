@@ -13,7 +13,7 @@
             </button>
         </form>
 
-        <a id="login" href="/auth">
+        <a id="login" href="<%= typeof user === 'undefined' ? '/auth' : '/account' %>">
             <span class="material-symbols-outlined">
                 person
             </span>
@@ -26,9 +26,9 @@
             <span class="material-symbols-outlined">
                 shopping_cart
             </span>
-            <% if(typeof cart !== "undefined" && cart.items.length > 0) { %>
+            <% if(typeof cart !== "undefined" && Object.keys(cart.items).length > 0) { %>
                 <div id="items-number">
-                    <%= cart.items.length %>
+                    <%= Object.keys(cart.items).length %>
                 </div>
             <% } %>
         </a>

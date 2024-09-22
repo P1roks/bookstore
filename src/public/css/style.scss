@@ -6,6 +6,7 @@ $secondaryDark: #73224F;
 $secondaryLight: #D93D93;
 $onSecondary: #FFFFFF;
 $accent: #b81237;
+$accentDark: #810d26;
 $onAccent: #FFFFFF;
 
 *{
@@ -145,25 +146,25 @@ main{
 
     .item-quantity{
         display: flex;
-        border: 1px solid black;
-        margin: 0 5%;
 
         & > *{
             padding: 2%;
+            background-color: transparent;
+            color: $onPrimary;
+            font-size: 1.5rem;
+            border: 1px solid $onPrimary;
         }
 
         input[type="number"]{
             width: 40%;
             flex-grow: 1;
             text-align: center;
-            border: 0;
             outline: none;
         }
 
         button{
             width: 20%;
-            background-color: white;
-            border: 0;
+            cursor: pointer;
         }
     }
 
@@ -239,69 +240,72 @@ main{
 
     #cart{
         display: grid;
-        gap: 2%;
         color: $onPrimary;
-        max-width: 30vw;
+        grid-template-columns: 4fr 1fr;
+        gap: 2%;
 
         #cart-items-container{
             background-color: $primary;
-            grid-column: 2;
-            padding: 5%;
+            padding-left: 5%;
 
-            & > .cart-item-single{
+            .cart-item-single{
                 display: grid;
-                grid-template-columns: 1fr 1fr .75fr 1fr 1fr;
+                grid-template-columns: .5fr .7fr .75fr 1fr .5fr;
                 margin: 5% 0;
                 align-items: center;
-                gap: 2%;
                 height: 10vh;
 
                 img{
                     height: 10vh;
                 }
 
-                span{
-                    font-size: 2rem;
+                a{
+                    color: $onPrimary;
+                    text-decoration: none;
+
+                    &:hover{
+                        color: $secondary;
+                    }
+                }
+
+                .delete-form{
+                    button{
+                        background-color: transparent;
+                        border: 0;
+
+                        span{
+                            font-size: 2rem;
+                            cursor: pointer;
+                            color: $onPrimary;
+                        }
+                    }
                 }
 
                 p{
                     font-size: 1.3rem;
                 }
-
-                .cart-item-quantity{
-                    display: flex;
-                    height: 40%;
-                    border: 1px solid black;
-
-                    & > *{
-                        font-size: 2rem;
-                        padding: 5%;
-                    }
-
-                    input[type="number"]{
-                        width: 40%;
-                        flex-grow: 1;
-                        text-align: center;
-                        border: 0;
-                        outline: none;
-                    }
-
-                    button{
-                        width: 20%;
-                        background-color: white;
-                        border: 0;
-                    }
-                }
             }
         }
 
         #cart-summary{
+            padding: 20% 5%;
             background-color: $primary;
-            grid-column: 3;
-            padding: 5%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
 
-            table{
-                width: 100%;
+            button{
+                grid-column: span 2;
+                height: 4vh;
+                background-color: $accent;
+                font-size: 1.5rem;
+                color: $onAccent;
+                cursor: pointer;
+                border: none;
+                outline: none;
+
+                &:hover{
+                    background-color: $accentDark;
+                }
             }
         }
     }
@@ -409,6 +413,8 @@ main{
                 color: $onSecondary;
                 font-size: 1.5rem;
                 cursor: pointer;
+                border: none;
+                width: 100%;
             }
 
             img{
@@ -441,16 +447,58 @@ main{
             background-color: $primary;
         }
 
-        #book-image{
-
-        }
-
         #book-info{
+            padding: 2%;
+            display: flex;
+            flex-direction: column;
+            gap: 2%;
 
+            #title{
+                font-size: 3rem;
+                padding: 2%;
+                background-color: $accent;
+            }
+
+            #author{
+                font-size: 2rem;
+            }
+
+            .property{
+                font-size: 1.5rem;
+            }
+
+            #description{
+                flex-grow: 1;
+                padding: 2%;
+                border-radius: 10px;
+            }
         }
 
         #book-cart-options{
             margin-left: 5%;
+            display: flex;
+            flex-direction: column;
+            padding-top: 20%;
+            gap: 10%;
+            padding: 20% 5% 20% 5%;
+
+            #price{
+                text-align: center;
+                font-size: 3rem;
+            }
+
+            button[type="submit"]{
+                padding: 5% 0;
+                background-color: $accent;
+                color: $onSecondary;
+                cursor: pointer;
+                font-size: 1.5rem;
+                border: none;
+
+                &:hover{
+                    background-color: $accentDark;
+                }
+            }
         }
     }
 }

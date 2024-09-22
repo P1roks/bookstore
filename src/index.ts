@@ -45,7 +45,7 @@ app.use("/cart", cartRouter)
 app.use((req, res) => res.status(404).render("error", {
     categories: DatabaseHandler.getCategoriesObject(),
     user: req.session.user,
-    cart: undefined,
+    cart: req.session.cart,
     errorImage: "/assets/404.png",
     errorCode: 404,
     errorDescription: "Nie znaleziono podanej podstrony"
@@ -61,7 +61,7 @@ app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
     {
         categories: [],
         user: req.session.user,
-        cart: undefined,
+        cart: req.session.cart,
         errorImage: "/assets/500.png",
         errorCode: 500,
         errorDescription: "Wewnętrzny błąd serwera"

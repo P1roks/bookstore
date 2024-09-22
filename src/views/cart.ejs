@@ -13,42 +13,41 @@
         <main>
             <section id="cart">
                 <div id="cart-items-container">
-                    <% cart.items.forEach(item => { %>
+                    <% cartItems.forEach(item => { %>
                         <div class="cart-item-single">
                             <img src="<%= item.image ? item.image : '/assets/missing_cover.png' %>" alt="item">
-                            <p><%= item.title %></p>
-                            <div class="cart-item-quantity">
+                            <a href="/book/<%= item.id %>" class="title"><%= item.title %></a>
+                            <p class="price"><%= item.price %>zł</p>
+                            <div class="item-quantity">
                                 <button>+</button>
                                 <input type="number" name="quantity" class="no-spin" min="1" value="<%= item.quantity %>">
                                 <button>-</button>
                             </div>
-                            <p><%= item.price %></p>
-                            <span class="material-symbols-outlined">
-                                delete
-                            </span>
+                            <form action="/cart/delete" method="POST" class="delete-form">
+                                <input type="hidden" name="bookId" value="<%= item.id %>">
+                                <button type="submit">
+                                    <span class="material-symbols-outlined">
+                                        delete
+                                    </span>
+                                </button>
+                            </form>
                         </div>
                     <% }) %>
                 </div>
 
                 <div id="cart-summary">
-                    <table>
-                        <tr>
-                            <td>Koszt produktów</td>
-                            <td><%= productsPrice %>zł</td>
-                        </tr>
-                        <tr>
-                            <td>Koszt dostawy</td>
-                            <td>12zł</td>
-                        </tr>
-                        <tr>
-                            <td>Rabat</td>
-                            <td><%= discount %></td>
-                        </tr>
-                        <tr id="full-cost">
-                            <td>Koszt całkowity</td>
-                            <th><%= totalPrice %>zł</th>
-                        </tr>
-                    </table>
+                    <p>Koszt produktów</p>
+                    <p class="value"><%= summary.totalPrice %>zł</p>
+
+                    <p>Koszt dostawy</p>
+                    <p class="value">12zł</p>
+
+                    <p>Rabat</p>
+                    <p class="value"><%= summary.discountPercentage %>%</p>
+
+                    <p>Koszt całkowity</p>
+                    <p class="value"><%= summary.finalPrice %>zł</p>
+
                     <button>Dostawa i Płatność</button>
                 </div>
             </section> 

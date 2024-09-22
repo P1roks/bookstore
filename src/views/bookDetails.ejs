@@ -20,24 +20,30 @@
                 <span id="book-info">
                     <h1 id="title"><%= title %></h1>
                     <h2 id="author"><%= author %></h4>
-                    <h4 class="">stan: <%= state %></h4>
-                    <h4 class="">język: <%= language %></h4>
-                    <h4 class="">kategoria: <%= category %></h4>
-                    <% if(tome !== null) { %> <h4>Tom: <%= tome %> </h4> <% } %>
-                    <p><%= description %></p>
+                    <h4 class="property">Stan: <%= state %></h4>
+                    <h4 class="property">Język: <%= language %></h4>
+                    <h4 class="property">Kategoria: <%= category %></h4>
+                    <% if(tome !== null) { %> <h4 class="property">Tom: <%= tome %> </h4> <% } %>
+                    <fieldset id="description">
+                        <legend>Opis</legend>
+                        <p><%= description %></p>
+                    </fieldset>
                 </span>
 
-                <span id="book-cart-options">
-                    <h3><%= price %>zł</h3>
-                    <input type="hidden" name="id" value="<%= id %>">
-                    <div class="item-quantity">
-                        <button>+</button>
-                        <input type="number" name="quantity" class="no-spin" min="1" value="1" max="<%= quantity %>">
-                        <button>-</button>
-                    </div>
-                    <p>Dostępnych <%= quantity %> sztuk</p>
-                    <button type="submit">Dodaj do koszyka</button>
-                </span>
+                <form action="/cart/add" method="POST" id="book-cart-options">
+                    <h1 id="price"><%= price %>zł</h1>
+                    <input type="hidden" name="bookId" value="<%= id %>">
+                    <span>
+                        <label for="quantity">Liczba sztuk</label>
+                        <div class="item-quantity">
+                            <button type="button" onclick="changeQuantity(this, -1)">-</button>
+                            <input type="number" name="quantity" class="no-spin" min="1" value="1" max="<%= quantity %>">
+                            <button type="button" onclick="changeQuantity(this, 1)">+</button>
+                        </div>
+                        <p>Dostępnych <%= quantity %> sztuk</p>
+                    </span>
+                    <button type="submit">DODAJ DO KOSZYKA</button>
+                </form>
             </section>
         </main>
     </body>

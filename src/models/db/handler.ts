@@ -1,4 +1,4 @@
-import { Database, BookProperty, Book, CategoryInfoFull, LoginUser, User } from "../../types"
+import { Database, BookProperty, Book, CategoryInfoFull, LoginUser, User, Cart, CartItem } from "../../types"
 import bcrypt from 'bcrypt';
 
 export class DatabaseHandler{
@@ -159,5 +159,24 @@ export class DatabaseHandler{
             JOIN languages l ON b.language_id = l.id
             WHERE b.id = ${id};`)
         )[0] as Book
+    }
+
+    async getCartItems(cartSession: Cart | undefined): Promise<CartItem[]>{
+        if(!cartSession || Object.keys(cartSession.items).length === 0 ) return []
+        const selectedIds = Object.keys(cartSession.items).join(',')
+        const cartItems = await this.database.query(`
+            SELECT
+                b.id,
+                b.title,
+                b.price
+            FROM books b
+            WHERE b.id IN (${selectedIds});`) as CartItem[]
+        Object.entries(cartSession.items)
+            .forEach(([bookId, quantity]) => {
+                 const found = cartItems.find(book => book.id === Number(bookId))
+                 if(found) found.quantity = quantity
+            })
+
+        return cartItems
     }
 }
