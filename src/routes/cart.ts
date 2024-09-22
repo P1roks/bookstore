@@ -30,9 +30,10 @@ cartRouter.post("/add", async (req: Request<{}, {}, BookCartTransfer>, res) => {
     res.redirect("/")
 })
 
-cartRouter.post("/quantity", (req, res) => {
+cartRouter.post("/quantity", (req: Request<{}, {}, BookCartTransfer>, res) => {
     // change quantity of item
-    res.send(req.body)
+    if(req.session.cart && req.body.bookId in req.session.cart.items && req.body.quantity) req.session.cart.items[req.body.bookId] = req.body.quantity
+    res.redirect("/cart")
 })
 
 cartRouter.post("/delete", (req: Request<{}, {}, BookCartTransfer>, res) => {

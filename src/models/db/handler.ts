@@ -168,7 +168,8 @@ export class DatabaseHandler{
             SELECT
                 b.id,
                 b.title,
-                b.price
+                b.price,
+                b.quantity as maxQuantity
             FROM books b
             WHERE b.id IN (${selectedIds});`) as CartItem[]
         Object.entries(cartSession.items)

@@ -65,11 +65,21 @@
                     <button id="filter-button" onClick="filterBooks()">Filtruj</button>
                 </section>
 
+                <% if(books.length > 0) { %>
                 <section id="books">
                     <% books.forEach(book => { %>
                         <%- include("common/book", {book} ) %>
                     <% }) %>
                 </section>
+                <% } else { %>
+                <section class="missing">
+                    <img src="/assets/no_results.png" alt="Empty cart">
+                    <span>
+                        <h1>Nie znalezliśmy żadnych wyników</h1>
+                        <p>Spróbuj wyszukać używając innych filtrów</p>
+                    </span>
+                </section>
+                <% } %>
             </div>
         </main>
     </body>

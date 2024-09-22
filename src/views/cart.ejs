@@ -11,6 +11,7 @@
         <%- include("common/searchbar", {categories, user, cart}) %>
 
         <main>
+            <% if(cartItems.length) { %>
             <section id="cart">
                 <div id="cart-items-container">
                     <% cartItems.forEach(item => { %>
@@ -18,11 +19,12 @@
                             <img src="<%= item.image ? item.image : '/assets/missing_cover.png' %>" alt="item">
                             <a href="/book/<%= item.id %>" class="title"><%= item.title %></a>
                             <p class="price"><%= item.price %>zł</p>
-                            <div class="item-quantity">
-                                <button>+</button>
-                                <input type="number" name="quantity" class="no-spin" min="1" value="<%= item.quantity %>">
-                                <button>-</button>
-                            </div>
+                            <form class="item-quantity" method="POST" action="/cart/quantity">
+                                <input type="hidden" name="bookId" value="<%= item.id %>">
+                                <button type="submit" onclick="changeQuantity(this, -1)">-</button>
+                                <input type="number" name="quantity" class="no-spin" min="1" value="<%= item.quantity %>" max="<%= item.maxQuantity %>">
+                                <button type="submit" onclick="changeQuantity(this, 1)">+</button>
+                            </form>
                             <form action="/cart/delete" method="POST" class="delete-form">
                                 <input type="hidden" name="bookId" value="<%= item.id %>">
                                 <button type="submit">
@@ -37,7 +39,7 @@
 
                 <div id="cart-summary">
                     <p>Koszt produktów</p>
-                    <p class="value"><%= summary.totalPrice %>zł</p>
+                    <p class="value"><%= summary.totalPrice.toFixed(2) %>zł</p>
 
                     <p>Koszt dostawy</p>
                     <p class="value">12zł</p>
@@ -46,11 +48,21 @@
                     <p class="value"><%= summary.discountPercentage %>%</p>
 
                     <p>Koszt całkowity</p>
-                    <p class="value"><%= summary.finalPrice %>zł</p>
+                    <p class="value"><%= summary.finalPrice.toFixed(2) %>zł</p>
 
-                    <button>Dostawa i Płatność</button>
+                    <a href="/cart/buy">Dostawa i Płatność</a>
                 </div>
             </section> 
+            <% } else { %>
+                <section class="missing">
+                    <img src="/assets/empty_cart.png" alt="Empty cart">
+                    <span>
+                        <h1>Twój koszyk jest pusty</h1>
+                        <p>Dodaj do niego przedmioty aby je kupić</p>
+                    </span>
+                </section>
+            <% } %>
         </main>
+        <script src="/scripts/bookScripts.js"></script>
     </body>
 </html>

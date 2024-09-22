@@ -40,7 +40,3 @@ function filterBooks(){
 
     window.location.href = `/search?${currentFilters.toString()}`
 }
-
-function changeCategory(){
-
-}
