@@ -50,9 +50,9 @@ export class DatabaseHandler{
     async getUser(data: string | number): Promise<User>{
         switch(typeof data){
             case "string":
-                return (await this.database.query(this.database.format("SELECT email FROM users WHERE email = ?", [data])) as User[])[0]
+                return (await this.database.formattedQuery("SELECT email FROM users WHERE email = ?", [data]) as User[])[0]
             case "number":
-                return (await this.database.query(this.database.format("SELECT email FROM users WHERE id = ?", [data])) as User[])[0]
+                return (await this.database.formattedQuery("SELECT email FROM users WHERE id = ?", [data]) as User[])[0]
             default:
                 throw new Error(`Wrong type provided to getUser function! Provided type: ${typeof data}`)
         }
@@ -60,7 +60,7 @@ export class DatabaseHandler{
 
     async checkUserCredentials({email, plainPassword}: LoginUser): Promise<boolean>{
         try{
-            const maybeUser = await this.database.query(this.database.format("SELECT password FROM users WHERE email = ?", [email])) as {password: string}[]
+            const maybeUser = await this.database.formattedQuery("SELECT password FROM users WHERE email = ?", [email]) as {password: string}[]
             const savedPassword = maybeUser[0]?.password
             return await bcrypt.compare(plainPassword, savedPassword)
         }
@@ -72,7 +72,7 @@ export class DatabaseHandler{
 
     async addUser({email, plainPassword}: LoginUser): Promise<number>{
         const hashed = await bcrypt.hash(plainPassword, 10)
-        return (await this.database.query(this.database.format("INSERT INTO users(email, password) VALUES(?, ?)", [email, hashed])) as any).insertId
+        return (await this.database.formattedQuery("INSERT INTO users(email, password) VALUES(?, ?)", [email, hashed]) as any).insertId
     }
 
     async getCategories(): Promise<BookProperty[]>{
@@ -84,8 +84,8 @@ export class DatabaseHandler{
     }
 
     async getFullCategoryInfo(categoryId: number): Promise<CategoryInfoFull>{
-        let category = (await this.database.query(this.database.format("SELECT id, name FROM categories WHERE id = ? LIMIT 1", [categoryId] )))[0] as BookProperty
-        let subcategories = await this.database.query(this.database.format("SELECT id, name FROM subcategories WHERE category_id = ?", [categoryId])) as BookProperty[]
+        let category = (await this.database.formattedQuery("SELECT id, name FROM categories WHERE id = ? LIMIT 1", [categoryId] ))[0] as BookProperty
+        let subcategories = await this.database.formattedQuery("SELECT id, name FROM subcategories WHERE category_id = ?", [categoryId]) as BookProperty[]
         return {
             id: category.id,
             name: category.name,
@@ -94,7 +94,7 @@ export class DatabaseHandler{
     }
 
     async getRandomBooks(quantity: number): Promise<Book[]>{
-        return (await this.database.query(`
+        return (await this.database.formattedQuery(`
             SELECT
                 b.id,
                 b.title,
@@ -112,7 +112,7 @@ export class DatabaseHandler{
             JOIN subcategories s ON b.subcategory_id = s.id
             JOIN languages l ON b.language_id = l.id
             ORDER BY RAND()
-            LIMIT ${quantity};`)
+            LIMIT ?;`, [quantity])
         ) as Book[]
     }
 
@@ -140,7 +140,7 @@ export class DatabaseHandler{
     }
 
     async getBookById(id: number): Promise<Book> {
-        return (await this.database.query(`
+        return (await this.database.formattedQuery(`
             SELECT
                 b.id,
                 b.title,
@@ -157,12 +157,13 @@ export class DatabaseHandler{
             JOIN categories c ON b.category_id = c.id
             JOIN subcategories s ON b.subcategory_id = s.id
             JOIN languages l ON b.language_id = l.id
-            WHERE b.id = ${id};`)
+            WHERE b.id = ?;`, [id])
         )[0] as Book
     }
 
     async getCartItems(cartSession: Cart | undefined): Promise<CartItem[]>{
         if(!cartSession || Object.keys(cartSession.items).length === 0 ) return []
+
         const selectedIds = Object.keys(cartSession.items).join(',')
         const cartItems = await this.database.query(`
             SELECT
@@ -172,12 +173,33 @@ export class DatabaseHandler{
                 b.quantity as maxQuantity
             FROM books b
             WHERE b.id IN (${selectedIds});`) as CartItem[]
+
         Object.entries(cartSession.items)
-            .forEach(([bookId, quantity]) => {
-                 const found = cartItems.find(book => book.id === Number(bookId))
-                 if(found) found.quantity = quantity
+            .forEach(([bookId, {quantity}]) => {
+                const found = cartItems.find(book => book.id === Number(bookId))
+                if(found) found.quantity = quantity
             })
 
         return cartItems
+    }
+
+    async updateBooksPostPurchase(cartSession: Cart | undefined){
+        if(!cartSession || Object.keys(cartSession.items).length === 0 ) return []
+
+        const selectedIds = Object.keys(cartSession.items).join(',')
+        const caseStatemets =
+            Object
+            .entries(cartSession.items)
+            .map(([bookId, {quantity}]) => this.database.format(`WHEN id=? THEN quantity - ?`, [bookId, quantity]))
+            .join("\n")
+
+        this.database.query(`
+            UPDATE books
+            SET quantity = CASE
+                ${caseStatemets}
+                ELSE quantity
+            END
+            WHERE id IN (${selectedIds})
+        `)
     }
 }

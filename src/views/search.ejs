@@ -72,13 +72,7 @@
                     <% }) %>
                 </section>
                 <% } else { %>
-                <section class="missing">
-                    <img src="/assets/no_results.png" alt="Empty cart">
-                    <span>
-                        <h1>Nie znalezliśmy żadnych wyników</h1>
-                        <p>Spróbuj wyszukać używając innych filtrów</p>
-                    </span>
-                </section>
+                    <%- include("common/info", {image: "/assets/no_results.png", header: "Nie znalezliśmy żadnych wyników", description: "Spróbuj wyszukać używając innych filtrów"}) %>
                 <% } %>
             </div>
         </main>

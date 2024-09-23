@@ -1,0 +1,56 @@
+#book-details{
+    color: $onPrimary;
+    display: grid;
+    grid-template-columns: 1fr 3fr 1fr;
+
+    & > *{
+        background-color: $primary;
+    }
+
+    #book-info{
+        padding: 2%;
+        display: flex;
+        flex-direction: column;
+        gap: 2%;
+
+        #title{
+            font-size: 3rem;
+            padding: 2%;
+            background-color: $accent;
+        }
+
+        #author{
+            font-size: 2rem;
+        }
+
+        .property{
+            font-size: 1.5rem;
+        }
+
+        #description{
+            flex-grow: 1;
+            padding: 2%;
+            border-radius: 10px;
+        }
+    }
+
+    #book-cart-options{
+        margin-left: 5%;
+        display: flex;
+        flex-direction: column;
+        padding-top: 20%;
+        gap: 10%;
+        padding: 20% 5% 20% 5%;
+
+        #price{
+            text-align: center;
+            font-size: 3rem;
+        }
+
+        button[type="submit"]{
+            @include hover-button($accent, $onAccent, $accentDark);
+            padding: 5% 0;
+            font-size: 1.5rem;
+        }
+    }
+}

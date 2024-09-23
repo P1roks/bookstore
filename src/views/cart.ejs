@@ -54,13 +54,7 @@
                 </div>
             </section> 
             <% } else { %>
-                <section class="missing">
-                    <img src="/assets/empty_cart.png" alt="Empty cart">
-                    <span>
-                        <h1>Twój koszyk jest pusty</h1>
-                        <p>Dodaj do niego przedmioty aby je kupić</p>
-                    </span>
-                </section>
+                <%- include("common/info", {image: "/assets/empty_cart.png", header: "Twój koszyk jest pusty", description: "Dodaj do niego przedmioty aby je kupić"}) %>
             <% } %>
         </main>
         <script src="/scripts/bookScripts.js"></script>

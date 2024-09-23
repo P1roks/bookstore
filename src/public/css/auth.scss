@@ -1,0 +1,53 @@
+#auth{
+    display: grid;
+    margin-top: 5%;
+    gap: 1%;
+    grid-template-columns: 1fr 1fr;
+    color: $onPrimary;
+
+    #login{
+        margin-left: auto;
+    }
+
+    #register{
+        margin-right: auto;
+    }
+
+    #login, #register{
+        max-width: 30vw;
+        background-color: $primary;
+        padding: 15%;
+
+        .auth-error{
+            color: red;
+        }
+
+        form{
+            display: flex;
+            flex-direction: column;
+
+            span{
+                margin: 5% 0;
+                display: flex;
+                label, input[type="text"], input[type="password"]{
+                    width: 50%;
+                }
+
+                input[type="checkbox"]{
+                    margin-right: 5%;
+                    & + label{
+                        width: 70%;
+                    }
+                }
+
+                button{
+                    width: 100%;
+                    padding: 2%;
+                    background-color: $secondary;
+                    color: $onSecondary;
+                    border-radius: 20px;
+                }
+            }
+        }
+    }
+}

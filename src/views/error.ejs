@@ -11,16 +11,7 @@
         <%- include("common/searchbar", {categories, user, cart}) %>
 
         <main>
-            <section id="error">
-                <div id="error-image">
-                    <img src="<%= errorImage %>" alt="Error Image">
-                </div>
-
-                <div id="error-reason">
-                    <h1 id="error-code"><%= errorCode %></h1>
-                    <h2><%= errorDescription %></h2>
-                </div>
-            </section>
+            <%- include("common/info", {image: errorImage, header: errorCode, description: errorDescription}) %>
         </main>
     </body>
 </html>

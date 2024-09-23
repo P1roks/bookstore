@@ -1,0 +1,66 @@
+#filtered-search{
+    display: flex;
+    gap: 5%;
+
+    #books{
+        width: 85%;
+    }
+
+    #filters{
+        display: flex;
+        flex-direction: column;
+        gap: 1%;
+        background-color: $primary;
+        padding: 2%;
+
+        width: 20%;
+        color: $onPrimary;
+
+        .filter-section{
+            display: flex;
+            flex-direction: column;
+
+            label, input[type="checkbox"]{
+                cursor: pointer;
+            }
+
+            input[type="checkbox"]{
+                accent-color: $secondary;
+            }
+        }
+
+        & > *{
+            border-bottom: 2px solid $secondary;
+            padding: 3%;
+        }
+
+        .categories{
+            a{
+                color: $secondary;
+                cursor: pointer;
+            }
+
+            .selected{
+                color: $accent;
+            }
+
+            .category{
+                margin-left: 2%;
+                list-style-type: none;
+
+                &:not(.selected):hover{
+                    cursor: pointer;
+                    color: $secondary;
+                }
+            }
+        }
+
+        .price input{
+            width: 40%;
+        }
+
+        #filter-button{
+            @include hover-button;
+        }
+    }
+}

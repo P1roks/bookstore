@@ -28,4 +28,8 @@ export class SQLDatabase implements Database{
     }
 
     format = (query: string, data: any[]): string => mysql.format(query, data)
+
+    async formattedQuery(query: string, data: any[]): Promise<unknown[]>{
+        return this.query(this.format(query, data))
+    }
 }

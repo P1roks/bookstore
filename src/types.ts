@@ -10,7 +10,8 @@ export interface SQLDatabaseSettings {
 
 export interface Database{
     query(query: string): Promise<unknown[]>
-    format(query: string, data: any): string
+    format(query: string, data: any[]): string
+    formattedQuery(query: string, data: any[]): Promise<unknown[]>
 }
 
 export interface BookProperty{
@@ -73,7 +74,10 @@ export interface RegisterUserTransfer{
 }
 
 export interface Cart{
-    items: { [bookId: number]: number } // cart.items[bookId] = quantity
+    items: { [bookId: number]: {
+        quantity: number,
+        maxQuantity: number,
+    } } // cart.items[bookId] = quantity
 }
 
 export interface BookCartTransfer{

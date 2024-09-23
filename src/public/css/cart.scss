@@ -1,0 +1,68 @@
+#cart{
+    display: grid;
+    color: $onPrimary;
+    grid-template-columns: 4fr 1fr;
+    gap: 2%;
+
+    #cart-items-container{
+        background-color: $primary;
+        padding-left: 5%;
+
+        .cart-item-single{
+            display: grid;
+            grid-template-columns: .5fr .7fr .75fr 1fr .5fr;
+            margin: 5% 0;
+            align-items: center;
+            height: 10vh;
+
+            img{
+                height: 10vh;
+            }
+
+            a{
+                color: $onPrimary;
+                text-decoration: none;
+
+                &:hover{
+                    color: $secondary;
+                }
+            }
+
+            .delete-form{
+                margin-left: 50%;
+
+                button{
+                    background-color: transparent;
+
+                    span{
+                        font-size: 2rem;
+                        cursor: pointer;
+                        color: $onPrimary;
+                    }
+                }
+            }
+
+            p{
+                font-size: 1.3rem;
+            }
+        }
+    }
+
+    #cart-summary{
+        padding: 20% 5%;
+        background-color: $primary;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+
+        a{
+            @include hover-button($accent, $onAccent, $accentDark);
+            grid-column: span 2;
+            padding: 3%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            text-align: center;
+            vertical-align: center;
+            text-decoration: none;
+        }
+    }
+}

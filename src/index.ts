@@ -12,6 +12,7 @@ import { cartRouter } from './routes/cart';
 import { DatabaseHandler } from './models/db/handler';
 import { SQLDatabase } from './models/db/database';
 import rateLimit from 'express-rate-limit';
+import { userRouter } from './routes/user';
 
 export let db: DatabaseHandler;
 const app = express();
@@ -41,6 +42,7 @@ app.set("views", path.join(__dirname, "/views"))
 app.use("/", storeRouter)
 app.use("/auth", authRouter)
 app.use("/cart", cartRouter)
+app.use("/account", userRouter)
 
 app.use((req, res) => res.status(404).render("error", {
     categories: DatabaseHandler.getCategoriesObject(),

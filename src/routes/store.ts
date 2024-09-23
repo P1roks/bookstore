@@ -10,10 +10,10 @@ storeRouter.get("/", async (req, res, next) => {
     // front page, display random books
     try {
         const books = await db.getRandomBooks(20);
-        res.render("mainpage", { books, categories: DatabaseHandler.getCategoriesObject(), user: req.session.user, cart: req.session.cart})
+        return res.render("mainpage", { books, categories: DatabaseHandler.getCategoriesObject(), user: req.session.user, cart: req.session.cart})
     }
     catch(error){
-        next(error)
+        return next(error)
     }
 })
 

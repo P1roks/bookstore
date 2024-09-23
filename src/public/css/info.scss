@@ -1,0 +1,24 @@
+#info{
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    background-color: $primary;
+    color: $onPrimary;
+    flex-grow: 1;
+
+    #info-image{
+        max-height: 70vh;
+    }
+
+    #info-reason{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        color: white;
+
+        #info-header{
+            font-size: 300%;
+        }
+    }
+}
