@@ -1,6 +1,6 @@
 import { Request, Router } from "express";
 import { DatabaseHandler } from "../models/db/handler";
-import { CartBookTransfer } from "../types";
+import { CartBookTransfer, SessionCart } from "../types";
 import { db } from "..";
 import { genSummary } from "../utils";
 import { CartHandler } from "../models/cart-handler";
@@ -25,11 +25,8 @@ cartRouter.post("/add", async (req: Request<{}, {}, CartBookTransfer>, res) => {
     const quantity = req.body.quantity ? parseInt(req.body.quantity, 10) : 1
 
     if(!isNaN(bookId) && quantity > 0){
-        const handler = new CartHandler(req.session.cart)
-        const added = await handler.addBook(bookId, quantity)
-        if(added !== null){
-            req.session.cart = added
-        }
+        const handler = new CartHandler(req.session.cart, (cart: SessionCart) => {req.session.cart = cart})
+        await handler.addBook(bookId, quantity)
     }
 
     res.redirect("/")
@@ -40,11 +37,8 @@ cartRouter.post("/quantity", (req: Request<{}, {}, CartBookTransfer>, res) => {
     const newQuantity = parseInt(req.body.quantity as string, 10)
     const bookId = parseInt(req.body.bookId as string, 10)
     if(!isNaN(newQuantity) && !isNaN(bookId) && newQuantity > 0){
-        const handler = new CartHandler(req.session.cart)
-        const changed = handler.changeQuantity(bookId, newQuantity)
-        if(changed !== null){
-            req.session.cart = changed 
-        }
+        const handler = new CartHandler(req.session.cart, (cart: SessionCart) => {req.session.cart = cart})
+        handler.changeQuantity(bookId, newQuantity)
     }
 
     res.redirect("/cart")
@@ -52,9 +46,8 @@ cartRouter.post("/quantity", (req: Request<{}, {}, CartBookTransfer>, res) => {
 
 cartRouter.post("/delete", (req: Request<{}, {}, CartBookTransfer>, res) => {
     // delete given item
-    const handler = new CartHandler(req.session.cart)
-    handler.deleteBook
-    req.session.cart = handler.deleteBook(req.body.bookId)
+    const handler = new CartHandler(req.session.cart, (cart: SessionCart) => {req.session.cart = cart})
+    handler.deleteBook(req.body.bookId)
 
     res.redirect("/cart")
 })
@@ -62,8 +55,8 @@ cartRouter.post("/delete", (req: Request<{}, {}, CartBookTransfer>, res) => {
 cartRouter.get("/buy", async (req, res) => {
     // simulate buying - remove desired book quantity from DB and empty cart
     await db.updateBooksPostPurchase(req.session.cart)
-    const handler = new CartHandler(req.session.cart)
-    req.session.cart = handler.clear()
+    const handler = new CartHandler(req.session.cart, (cart: SessionCart) => {req.session.cart = cart})
+    handler.clear()
 
     res.redirect("/")
 })
