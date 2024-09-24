@@ -35,9 +35,9 @@ app.use(rateLimit({
 }))
 
 app.use(bodyParser.urlencoded({ extended: true }))
-app.use(express.static("src/public"))
+app.use(express.static("public"))
 app.set("view engine", "ejs")
-app.set("views", path.join(__dirname, "/views"))
+app.set("views", path.join(process.cwd(), "/views"))
 
 app.use("/", storeRouter)
 app.use("/auth", authRouter)
@@ -61,7 +61,7 @@ app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
     console.log(`Error: ${error}`)
     res.status(500).render("error",
     {
-        categories: [],
+        categories: DatabaseHandler.getCategoriesObject(),
         user: req.session.user,
         cart: req.session.cart,
         errorImage: "/assets/500.png",
