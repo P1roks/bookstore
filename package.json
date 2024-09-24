@@ -4,7 +4,7 @@
   "main": "./build/index.js",
   "scripts": {
     "start": "node ./build/index.js",
-    "build": "tsc && cp -r ./src/views ./build/",
+    "build": "tsc",
     "deploy": "npm run build && npm run start",
     "dev": "npx ts-node ./src/index.ts",
     "dev:watch": "nodemon --exec npx ts-node ./src/index.ts"

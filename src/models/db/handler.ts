@@ -1,4 +1,4 @@
-import { Database, BookProperty, Book, CategoryInfoFull, LoginUser, User, Cart, CartItem } from "../../types"
+import { Database, BookProperty, Book, CategoryInfoFull, LoginUser, User, SessionCart, CartItem } from "../../types"
 import bcrypt from 'bcrypt';
 
 export class DatabaseHandler{
@@ -161,7 +161,7 @@ export class DatabaseHandler{
         )[0] as Book
     }
 
-    async getCartItems(cartSession: Cart | undefined): Promise<CartItem[]>{
+    async getCartItems(cartSession: SessionCart | undefined): Promise<CartItem[]>{
         if(!cartSession || Object.keys(cartSession.items).length === 0 ) return []
 
         const selectedIds = Object.keys(cartSession.items).join(',')
@@ -183,7 +183,7 @@ export class DatabaseHandler{
         return cartItems
     }
 
-    async updateBooksPostPurchase(cartSession: Cart | undefined){
+    async updateBooksPostPurchase(cartSession: SessionCart | undefined){
         if(!cartSession || Object.keys(cartSession.items).length === 0 ) return []
 
         const selectedIds = Object.keys(cartSession.items).join(',')

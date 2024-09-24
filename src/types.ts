@@ -73,11 +73,13 @@ export interface RegisterUserTransfer{
     terms?: "on",
 }
 
-export interface Cart{
-    items: { [bookId: number]: {
-        quantity: number,
-        maxQuantity: number,
-    } } // cart.items[bookId] = quantity
+export interface SessionCart{
+    items: { [bookId: number]: SessionCartItem } // cart.items[bookId] = quantity
+}
+
+export interface SessionCartItem{
+    quantity: number,
+    maxQuantity: number,
 }
 
 export interface BookCartTransfer{

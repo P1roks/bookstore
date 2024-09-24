@@ -1,8 +1,7 @@
 node_modules
 package-lock.json
 **/.sass-cache
-src/**/*.css
-src/**/*.css.map
-**/.css.map
+**/*.css
+**/*.css.map
 build
 .env
