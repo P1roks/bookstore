@@ -20,11 +20,6 @@ export interface BookProperty{
     checked?: boolean,
 }
 
-export interface BookState{
-    name: string,
-    checked: boolean,
-}
-
 export interface CategoryInfoFull{
     id: number,
     name: string,
@@ -82,7 +77,7 @@ export interface SessionCartItem{
     maxQuantity: number,
 }
 
-export interface BookCartTransfer{
+export interface CartBookTransfer{
     bookId: string,
     quantity?: string,
 }

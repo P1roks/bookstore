@@ -1,6 +1,6 @@
 import { Request, Router } from "express";
 import { DatabaseHandler } from "../models/db/handler";
-import { BookCartTransfer } from "../types";
+import { CartBookTransfer } from "../types";
 import { db } from "..";
 import { genSummary } from "../utils";
 import { CartHandler } from "../models/cart-handler";
@@ -19,7 +19,7 @@ cartRouter.get("/", async (req, res, next) => {
     }
 })
 
-cartRouter.post("/add", async (req: Request<{}, {}, BookCartTransfer>, res) => {
+cartRouter.post("/add", async (req: Request<{}, {}, CartBookTransfer>, res) => {
     // add item to cart
     const bookId = parseInt(req.body.bookId, 10)
     const quantity = req.body.quantity ? parseInt(req.body.quantity, 10) : 1
@@ -35,7 +35,7 @@ cartRouter.post("/add", async (req: Request<{}, {}, BookCartTransfer>, res) => {
     res.redirect("/")
 })
 
-cartRouter.post("/quantity", (req: Request<{}, {}, BookCartTransfer>, res) => {
+cartRouter.post("/quantity", (req: Request<{}, {}, CartBookTransfer>, res) => {
     // change quantity of item
     const newQuantity = parseInt(req.body.quantity as string, 10)
     const bookId = parseInt(req.body.bookId as string, 10)
@@ -50,7 +50,7 @@ cartRouter.post("/quantity", (req: Request<{}, {}, BookCartTransfer>, res) => {
     res.redirect("/cart")
 })
 
-cartRouter.post("/delete", (req: Request<{}, {}, BookCartTransfer>, res) => {
+cartRouter.post("/delete", (req: Request<{}, {}, CartBookTransfer>, res) => {
     // delete given item
     const handler = new CartHandler(req.session.cart)
     handler.deleteBook
