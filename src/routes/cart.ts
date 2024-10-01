@@ -52,11 +52,22 @@ cartRouter.post("/delete", (req: Request<{}, {}, CartBookTransfer>, res) => {
     res.redirect("/cart")
 })
 
-cartRouter.get("/buy", async (req, res) => {
+cartRouter.get("/buy", async (req, res, next) => {
     // simulate buying - remove desired book quantity from DB and empty cart
-    await db.updateBooksPostPurchase(req.session.cart)
     const handler = new CartHandler(req.session.cart, (cart: SessionCart) => {req.session.cart = cart})
-    handler.clear()
+    try{
+        await handler.purchase()
+    }catch(error){
+        next(error)
+    }
 
-    res.redirect("/")
+    res.render("infopage",
+    {
+        categories: DatabaseHandler.getCategoriesObject(),
+        user: req.session.user,
+        cart: req.session.cart,
+        image: "/assets/after_purchase.png",
+        header: "Zakupiono pomyślnie",
+        description: "Życzymy miłego czytania!"
+    })
 })

@@ -17,7 +17,11 @@
                     <div class="filter-section categories">
                         <% if(typeof filters.selectedCategory.subcategories !== "undefined") { %>
                             <h2>Podkategorie <%= filters.selectedCategory.name %>:</h2>
-                            <p>Powrót do <a onClick="removeCategory()">Kategorii</a></p>
+                            <% if (filters.selectedCategory.subcategories[0].checked) { %>
+                                <p>Powrót do <a onClick="switchToBroaderCategory()"><%= filters.selectedCategory.name %> </a></p>
+                            <% } else { %>
+                                <p>Powrót do <a onClick="switchToBroaderCategory()">Kategorii</a></p>
+                            <% } %>
                             <ul>
                                 <% filters.selectedCategory.subcategories.forEach(subcategory => { %>
                                     <li class="category <% if(subcategory.checked) { %> selected <% } %>"

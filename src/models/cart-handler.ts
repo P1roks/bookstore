@@ -41,6 +41,11 @@ export class CartHandler{
         this.setCart(this.cart)
     }
 
+    async purchase(){
+       await db.updateBooksPostPurchase(this.cart) 
+       this.clear()
+    }
+
     clear(){
         this.cart = { items: {} }
         this.setCart(this.cart)

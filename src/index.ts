@@ -44,13 +44,13 @@ app.use("/auth", authRouter)
 app.use("/cart", cartRouter)
 app.use("/account", userRouter)
 
-app.use((req, res) => res.status(404).render("error", {
+app.use((req, res) => res.status(404).render("infopage", {
     categories: DatabaseHandler.getCategoriesObject(),
     user: req.session.user,
     cart: req.session.cart,
-    errorImage: "/assets/404.png",
-    errorCode: 404,
-    errorDescription: "Nie znaleziono podanej podstrony"
+    image: "/assets/404.png",
+    header: "404",
+    description: "Nie znaleziono podanej podstrony"
 }))
 
 app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
@@ -59,14 +59,15 @@ app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
     }
 
     console.log(`Error: ${error}`)
-    res.status(500).render("error",
+
+    res.status(500).render("infopage",
     {
         categories: DatabaseHandler.getCategoriesObject(),
         user: req.session.user,
         cart: req.session.cart,
-        errorImage: "/assets/500.png",
-        errorCode: 500,
-        errorDescription: "Wewnętrzny błąd serwera"
+        image: "/assets/500.png",
+        header: "500",
+        description: "Wewnętrzny błąd serwera"
     })
 })
 

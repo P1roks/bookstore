@@ -1,18 +1,16 @@
-function toggleSubcategories(elem){
-    subcategories = elem.parentElement.querySelector("ul")
-    subcategories.style.display = subcategories.style.display === "block" ? "none" : "block";
-}
-
 function changeQueryParam(key, val){
     let currentParams = new URLSearchParams(window.location.search)
     currentParams.set(key, val)
     window.location.search = `?${currentParams.toString()}`
 }
 
-function removeCategory(){
+function switchToBroaderCategory(){
     let currentParams = new URLSearchParams(window.location.search)
-    currentParams.delete("subcategory")
-    currentParams.delete("category")
+    if(currentParams.has("subcategory")){
+        currentParams.delete("subcategory")
+    }else {
+        currentParams.delete("category")
+    }
 
     window.location.search = `?${currentParams.toString()}`
 }
