@@ -2,6 +2,7 @@
     color: $onPrimary;
     display: grid;
     grid-template-columns: 1fr 3fr 1fr;
+    grid-template-rows: auto 5fr;
 
     & > *{
         background-color: $primary;
@@ -51,6 +52,18 @@
             @include hover-button($accent, $onAccent, $accentDark);
             padding: 5% 0;
             font-size: 1.5rem;
+        }
+    }
+
+    #tome-books{
+        margin-top: 5%;
+        padding: 2%;
+        grid-column: 1 / 4;
+
+        #tome-books-list{
+            margin-top: 2%;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
         }
     }
 }

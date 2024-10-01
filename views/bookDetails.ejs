@@ -11,7 +11,7 @@
     <body>
         <%- include("common/searchbar", {categories, user, cart}) %>
 
-        <% let {id, image, title, author, state, price, quantity, language, category, description, tome} = book %>
+        <% let {id, image, title, author, state, price, quantity, language, category, description, tomeNumber} = book %>
         <main>
             <section id="book-details">
                 <span id="book-image">
@@ -24,7 +24,7 @@
                     <h4 class="property">Stan: <%= state %></h4>
                     <h4 class="property">Język: <%= language %></h4>
                     <h4 class="property">Kategoria: <%= category %></h4>
-                    <% if(tome !== null) { %> <h4 class="property">Tom: <%= tome %> </h4> <% } %>
+                    <% if(tomeNumber !== null && tomeNumber !== 0) { %> <h4 class="property">Tom: <%= tomeNumber %> </h4> <% } %>
                     <fieldset id="description">
                         <legend>Opis</legend>
                         <p><%= description %></p>
@@ -45,6 +45,17 @@
                     </span>
                     <button type="submit">DODAJ DO KOSZYKA</button>
                 </form>
+
+                <% if(tomeBooks.length > 0) { %>
+                    <span id="tome-books">
+                        <h1>Inne książki z tej serii</h1>
+                        <div id="tome-books-list">
+                            <% tomeBooks.forEach(tomeBook => { %>
+                                <%- include("common/book", {book: tomeBook}) %>
+                            <% }) %> 
+                        </div>
+                    </span>
+                <% } %>
             </section>
         </main>
     </body>

@@ -1,5 +1,5 @@
 import { db } from "..";
-import { Book, SessionCart } from "../types";
+import { BookDetail, SessionCart } from "../types";
 
 export class CartHandler{
     private cart: SessionCart;
@@ -11,7 +11,7 @@ export class CartHandler{
     }
 
     async addBook(bookId: number, quantity: number){
-        let book: Book
+        let book: BookDetail
 
         try{
             book = await db.getBookById(bookId)

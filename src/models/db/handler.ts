@@ -1,4 +1,4 @@
-import { Database, BookProperty, Book, CategoryInfoFull, LoginUser, User, SessionCart, CartItem } from "../../types"
+import { Database, BookProperty, BookDetail, CategoryInfoFull, LoginUser, User, SessionCart, CartItem, BookListItem } from "../../types"
 import bcrypt from 'bcrypt';
 
 export class DatabaseHandler{
@@ -93,53 +93,53 @@ export class DatabaseHandler{
         }
     }
 
-    async getRandomBooks(quantity: number): Promise<Book[]>{
+    async getRandomBooks(quantity: number): Promise<BookListItem[]>{
         return (await this.database.formattedQuery(`
             SELECT
-                b.id,
-                b.title,
-                b.author,
-                b.description,
-                b.state,
-                c.name AS category,
-                s.name AS subcategory,
-                l.name AS language,
-                b.price,
-                b.tome,
-                b.quantity
-            FROM books b
-            JOIN categories c ON b.category_id = c.id
-            JOIN subcategories s ON b.subcategory_id = s.id
-            JOIN languages l ON b.language_id = l.id
+                id,
+                title,
+                author,
+                state,
+                price
+            FROM books
             ORDER BY RAND()
             LIMIT ?;`, [quantity])
-        ) as Book[]
+        ) as BookListItem[]
     }
 
-    async getBooksWithConstraint(constraint: string){
+    async getBooksWithConstraint(constraint: string): Promise<BookListItem[]>{
         let whereClause = constraint.length ? `WHERE ${constraint}` : "";
         return (await this.database.query(`
             SELECT
                 books.id,
                 books.title,
                 books.author,
-                books.description,
                 books.state,
-                categories.name AS category,
-                subcategories.name AS subcategory,
-                languages.name AS language,
                 books.price,
-                books.tome,
                 books.quantity
             FROM books
             JOIN categories ON books.category_id = categories.id
             JOIN subcategories ON books.subcategory_id = subcategories.id
             JOIN languages ON books.language_id = languages.id
             ${whereClause};`)
-        ) as Book[]
+        ) as BookListItem[]
     }
 
-    async getBookById(id: number): Promise<Book> {
+    async getBooksByTome(book: BookDetail): Promise<BookListItem[]> {
+        return (await this.database.formattedQuery(`
+            SELECT
+                id,
+                title,
+                author,
+                state,
+                price
+            FROM books
+            WHERE tome_group = ? AND id != ?
+            ORDER BY tome_number ASC;`, [book.tomeGroup, book.id])
+        ) as BookListItem[]
+    }
+
+    async getBookById(id: number): Promise<BookDetail> {
         return (await this.database.formattedQuery(`
             SELECT
                 b.id,
@@ -151,14 +151,15 @@ export class DatabaseHandler{
                 s.name AS subcategory,
                 l.name AS language,
                 b.price,
-                b.tome,
+                b.tome_number as tomeNumber,
+                b.tome_group as tomeGroup,
                 b.quantity
             FROM books b
             JOIN categories c ON b.category_id = c.id
             JOIN subcategories s ON b.subcategory_id = s.id
             JOIN languages l ON b.language_id = l.id
             WHERE b.id = ?;`, [id])
-        )[0] as Book
+        )[0] as BookDetail
     }
 
     async getCartItems(cartSession: SessionCart | undefined): Promise<CartItem[]>{

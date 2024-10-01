@@ -26,7 +26,7 @@ export interface CategoryInfoFull{
     subcategories: BookProperty[],
 }
 
-export interface Book{
+export interface BookDetail{
     id: number,
     title: string,
     author: string,
@@ -34,9 +34,19 @@ export interface Book{
     category: string,
     subcategory: string,
     language: string,
+    state: string,
     price: number,
     quantity: number,
-    tome: number | null,
+    tomeNumber: number | null,
+    tomeGroup: number | null,
+}
+
+export interface BookListItem{
+    id: number,
+    title: string,
+    author: string,
+    price: number,
+    state: string,
 }
 
 export interface User{

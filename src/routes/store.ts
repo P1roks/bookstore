@@ -3,6 +3,7 @@ import { db } from "..";
 import { DatabaseHandler } from "../models/db/handler";
 import { SearchHandler, SearchQueryParams } from "../models/search-handler";
 import { toNumber, toNumberArray, wrapArray } from "../utils";
+import { BookListItem } from "../types";
 
 export const storeRouter = Router()
 
@@ -25,15 +26,24 @@ storeRouter.get("/book/:bookId", async (req, res, next) => {
         try{
             const book = await db.getBookById(bookId)
             if(book){
+                let tomeBooks: BookListItem[] = []
+
+                if(book.tomeGroup !== null){
+                    tomeBooks = await db.getBooksByTome(book)
+                }
+
                 return res.render("bookDetails", {
                     book,
+                    tomeBooks,
                     categories: DatabaseHandler.getCategoriesObject(),
                     user: req.session.user,
                     cart: req.session.cart
                 })
             }
         }
-        catch{} // book not found, display 404
+        catch(error){
+            next(error)
+        }
     }
 
     next() // 404

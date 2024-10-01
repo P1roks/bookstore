@@ -26,7 +26,8 @@ CREATE TABLE books (
     subcategory_id INT UNSIGNED NOT NULL,
     quantity INT UNSIGNED NOT NULL,
     price DECIMAL(6,2) NOT NULL,
-    tome INT UNSIGNED,
+    tome_number INT UNSIGNED,
+    tome_group INT UNSIGNED,
     FOREIGN KEY (language_id) REFERENCES languages(id),
     FOREIGN KEY (category_id) REFERENCES categories(id),
     FOREIGN KEY (subcategory_id) REFERENCES subcategories(id)
