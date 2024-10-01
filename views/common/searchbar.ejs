@@ -13,14 +13,19 @@
             </button>
         </form>
 
-        <a id="login" href="<%= typeof user === 'undefined' ? '/auth' : '/account' %>">
-            <span class="material-symbols-outlined">
+        <div id="login">
+            <a href="<%= typeof user === 'undefined' ? '/auth' : '/account' %>" class="material-symbols-outlined">
                 person
-            </span>
+            </a>
             <span class="additional-info">
-                <%= (typeof user !== "undefined" && user.email) ? user.email : "Zaloguj się" %>
+                <% if(typeof user !== "undefined" && user.email) { %>
+                    <a href="/account"><%= user.email %></a>
+                    <a href="/account/logout">Wyloguj się</a>
+                <% } else { %>
+                    <a href="/auth">Zaloguj się</a>
+                <% } %>
             </span>
-        </a>
+        </div>
 
         <a id="cart" href="/cart">
             <span class="material-symbols-outlined">

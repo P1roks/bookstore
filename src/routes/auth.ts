@@ -71,8 +71,3 @@ authRouter.post("/register", async (req: AuthRequest<RegisterUserTransfer>, res,
 
     next()
 }, authPage)
-
-authRouter.post("/logout", (req, res) => {
-    // logout
-    res.redirect("/")
-})
