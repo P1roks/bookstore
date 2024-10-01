@@ -29,8 +29,10 @@
         }
 
         & > *{
-            border-bottom: 2px solid $secondary;
             padding: 3%;
+            &:not(:nth-last-child(-n + 2)){ // exclude 2 last ones, since a button is there
+                border-bottom: 2px solid $secondary;
+            }
         }
 
         .categories{
