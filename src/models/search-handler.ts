@@ -1,6 +1,6 @@
 import mysql from 'mysql2';
 import { db } from ".."
-import { BookDetail, BookProperty, CategoryInfoFull } from "../types"
+import { IBook, BookProperty, CategoryInfoFull } from "../types"
 import { DatabaseHandler } from './db/handler';
 
 interface Filters{
@@ -123,8 +123,8 @@ export class SearchHandler{
     }
 
     // filter books according to provided params
-    async getFilteredBooks(): Promise<BookDetail[]>{
-        return await db.getBooksWithConstraint(this.getSQLConstraints()) as BookDetail[]
+    async getFilteredBooks(): Promise<IBook[]>{
+        return await db.getBooksWithConstraint(this.getSQLConstraints()) as IBook[]
     }
 
     // generate sidebar filters state, so they can stay filled in between site reloads

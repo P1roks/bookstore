@@ -3,7 +3,7 @@ import { db } from "..";
 import { DatabaseHandler } from "../models/db/handler";
 import { SearchHandler, SearchQueryParams } from "../models/search-handler";
 import { toNumber, toNumberArray, wrapArray } from "../utils";
-import { BookListItem } from "../types";
+import { IBookListItem } from "../types";
 
 export const storeRouter = Router()
 
@@ -26,7 +26,7 @@ storeRouter.get("/book/:bookId", async (req, res, next) => {
         try{
             const book = await db.getBookById(bookId)
             if(book){
-                let tomeBooks: BookListItem[] = []
+                let tomeBooks: IBookListItem[] = []
 
                 if(book.tomeGroup !== null){
                     tomeBooks = await db.getBooksByTome(book)

@@ -1,4 +1,5 @@
 import express from 'express';
+import { Types } from 'mongoose';
 
 export interface SQLDatabaseSettings {
     host: string | undefined, 
@@ -26,28 +27,6 @@ export interface CategoryInfoFull{
     subcategories: BookProperty[],
 }
 
-export interface BookDetail{
-    id: number,
-    title: string,
-    author: string,
-    description: string,
-    category: string,
-    subcategory: string,
-    language: string,
-    state: string,
-    price: number,
-    quantity: number,
-    tomeNumber: number | null,
-    tomeGroup: number | null,
-}
-
-export interface BookListItem{
-    id: number,
-    title: string,
-    author: string,
-    price: number,
-    state: string,
-}
 
 export interface User{
     email: string
@@ -58,17 +37,6 @@ export interface AuthRequest<ReqBody = any> extends express.Request<{}, {}, ReqB
     registerError?: string
 }
 
-// object used internally in backend
-export interface LoginUser{
-    email: string,
-    plainPassword: string
-}
-
-// object send in by form to backend
-export interface LoginUserTransfer{
-    email: string,
-    password: string
-}
 
 // object send in by form to backend
 export interface RegisterUserTransfer{
@@ -104,4 +72,71 @@ export interface CartSummary{
     totalPrice: number,
     discountPercentage: number,
     finalPrice: number,
+}
+
+export enum BookState{
+    NEW = "nowy",
+    VGOOD = "bardzo dobry",
+    GOOD = "dobry",
+    BAD = "zniszczony"
+}
+
+// MONGOOSE TYPES
+export interface IUser{
+    email: string,
+    password: string
+}
+
+export interface IBook{
+    _id: Types.ObjectId,
+    title: string,
+    author: string,
+    description: string,
+    language: Types.ObjectId,
+    category: Types.ObjectId,
+    state: BookState,
+    price: number,
+    quantity: number,
+    tome_info: {
+       tome_number: number,
+       tome_group: number
+    } | undefined
+}
+
+export interface ILanguage{
+    _id: Types.ObjectId,
+    name: string 
+}
+
+export interface ICategory{
+    _id: Types.ObjectId,
+    name: string,
+    subcategories: [
+        name: string
+    ]
+}
+
+export interface IBookListItem{
+    _id: Types.ObjectId,
+    title: string,
+    author: string,
+    price: number,
+    state: BookState,
+}
+
+export interface IBookFull{
+    _id: Types.ObjectId,
+    title: string,
+    author: string,
+    description: string,
+    language: string,
+    category: string,
+    subcategories: string[],
+    state: BookState,
+    price: number,
+    quantity: number,
+    tome_info: {
+       tome_number: number,
+       tome_group: number
+    } | undefined
 }
