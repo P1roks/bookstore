@@ -40,7 +40,7 @@
     </section>
     <section id="nav-categories">
         <% categories.forEach(category => { %>
-            <a class="nav-category-single" href="/search?category=<%= category.id %>"><span><%= category.name %></span></a>
+            <a class="nav-category-single" href="/search?category=<%= category._id %>"><span><%= category.name %></span></a>
         <% }) %>
     </section>
 </nav>

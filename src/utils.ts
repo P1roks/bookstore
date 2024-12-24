@@ -1,4 +1,4 @@
-import { CartItem, CartSummary } from "./types"
+import { CartSummary, ICartItem } from "./types"
 
 export const toNumber = (value: any): number | undefined => {
     const res = parseInt(value, 10)
@@ -16,7 +16,7 @@ export const toNumberArray = (value: any[]): number[] | undefined => {
     return value
 }
 
-export const genSummary = (cartItems: CartItem[]): CartSummary => {
+export const genSummary = (cartItems: ICartItem[]): CartSummary => {
     const totalPrice = cartItems.reduce(
         (accum, currentVal) => accum + currentVal.quantity * currentVal.price,
         0

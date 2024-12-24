@@ -4,6 +4,7 @@ import { CartBookTransfer, SessionCart } from "../types";
 import { db } from "..";
 import { genSummary } from "../utils";
 import { CartHandler } from "../models/cart-handler";
+import { Types } from "mongoose";
 
 export const cartRouter = Router()
 
@@ -21,12 +22,11 @@ cartRouter.get("/", async (req, res, next) => {
 
 cartRouter.post("/add", async (req: Request<{}, {}, CartBookTransfer>, res) => {
     // add item to cart
-    const bookId = parseInt(req.body.bookId, 10)
     const quantity = req.body.quantity ? parseInt(req.body.quantity, 10) : 1
 
-    if(!isNaN(bookId) && quantity > 0){
+    if(quantity > 0){
         const handler = new CartHandler(req.session.cart, (cart: SessionCart) => {req.session.cart = cart})
-        await handler.addBook(bookId, quantity)
+        await handler.addBook(req.body.bookId, quantity)
     }
 
     res.redirect("/")

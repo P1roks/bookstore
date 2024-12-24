@@ -1,6 +1,6 @@
-import { Schema, Types } from "mongoose";
+import { Model, model, Schema, Types } from "mongoose";
 import bcrypt from "bcrypt";
-import { BookState, IBook, ICategory, ILanguage, IUser } from "../../types";
+import { BookState, IBook, ICategoryFull, ILanguage, IUser } from "../../types";
 
 export const userSchema = new Schema<IUser>({
     password: {type: String, required: true},
@@ -23,7 +23,7 @@ const subcategorySchema = new Schema({
     name: {type: String, required: true}
 })
 
-export const categorySchema = new Schema<ICategory>({
+export const categorySchema = new Schema<ICategoryFull>({
     name: {type: String, required: true},
     subcategories: [subcategorySchema]
 })
@@ -47,11 +47,22 @@ export const bookSchema = new Schema<IBook>({
         ref: "Category",
         required: true,
     },
+    subcategories: {
+        type: [Schema.Types.ObjectId],
+        required: true,
+        validate: {
+            validator: async function(ids: Types.ObjectId[]): Promise<boolean> {
+                const Category: Model<ICategoryFull> = model<ICategoryFull>("Category", categorySchema)
+                const bookCategory: ICategoryFull | null = await Category.findById(this.category);
+                if(!bookCategory) return false
+                const validIds = bookCategory.subcategories.map(sub => sub._id.toString())
+                return ids.every(id => validIds.includes(id.toString()))
+            },
+            message: "Subcategories must be children of book's category"
+        }
+    },
     quantity: {type: Number, required: true},
     price: {type: Number, required: true},
-    tome_info: {
-        tome_number: {type: Number, required: true},
-        tome_group: {type: Number, required: true},
-        required: false
-    }
+    tomeNumber: Number,
+    tomeGroup: Number
 })

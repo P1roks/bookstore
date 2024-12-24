@@ -1,4 +1,4 @@
-import mysql from 'mysql2';
+/* import mysql from 'mysql2';
 import { db } from ".."
 import { IBook, BookProperty, CategoryInfoFull } from "../types"
 import { DatabaseHandler } from './db/handler';
@@ -167,4 +167,4 @@ export class SearchHandler{
 
         return filtersState
     }
-}
+} */

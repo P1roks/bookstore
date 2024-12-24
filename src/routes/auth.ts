@@ -1,6 +1,6 @@
 import { Response, Router } from "express";
 import { DatabaseHandler } from "../models/db/handler";
-import { AuthRequest, LoginUserTransfer, RegisterUserTransfer } from "../types";
+import { AuthRequest, IUser, RegisterUserTransfer } from "../types";
 import { db } from "..";
 const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
@@ -18,10 +18,10 @@ const authPage = (req: AuthRequest, res: Response) => {
 
 authRouter.get("/", authPage)
 
-authRouter.post("/login", async (req: AuthRequest<LoginUserTransfer>, res, next) => {
+authRouter.post("/login", async (req: AuthRequest<IUser>, res, next) => {
     // try logging in
     const {email, password} = req.body
-    const isValid = await db.checkUserCredentials({ email, plainPassword: password })
+    const isValid = await db.checkUserCredentials({ email, password })
     if(isValid){
         try{
             req.session.user = await db.getUser(req.body.email)
@@ -55,7 +55,7 @@ authRouter.post("/register", async (req: AuthRequest<RegisterUserTransfer>, res,
     }
     else{
         try{
-            const userId = await db.addUser({email, plainPassword: password})
+            const userId = await db.addUser({email, password: password})
             req.session.user = await db.getUser(userId)
             return res.redirect("/")
         }

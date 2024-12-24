@@ -1,12 +1,12 @@
-import { Database, BookProperty, IBook, CategoryInfoFull, IUser, User, SessionCart, CartItem, IBookListItem, ILanguage, ICategory, IBookFull } from "../../types"
+import { BookProperty, IBook, IUser, SessionCart, IBookListItem, ILanguage, ICategoryFull, IBookFull, ICartItem, SessionUser, ICategory } from "../../types"
 import bcrypt from 'bcrypt';
 import { bookSchema, categorySchema, languageSchema, userSchema } from "./schemas";
-import { Model, model, Types } from "mongoose";
+import { connect, Model, model, Types } from "mongoose";
 
 export class DatabaseHandler{
     private User: Model<IUser>
     private Language: Model<ILanguage>
-    private Category: Model<ICategory>
+    private Category: Model<ICategoryFull>
     private Book: Model<IBook>
     private static _categories: ICategory[]
     private static _languages: ILanguage[]
@@ -34,42 +34,49 @@ export class DatabaseHandler{
         }
     ]
 
-    public static readonly getCategoriesObject = () => structuredClone(DatabaseHandler._categories)
-    public static readonly getStatesObject = () => structuredClone(DatabaseHandler._states)
-    public static readonly getLanguagesObject = () => structuredClone(DatabaseHandler._languages)
+    public static readonly getCategoriesObject = () => JSON.parse(JSON.stringify(DatabaseHandler._categories))
+    public static readonly getStatesObject = () => JSON.parse(JSON.stringify(DatabaseHandler._states))
+    public static readonly getLanguagesObject = () => JSON.parse(JSON.stringify(DatabaseHandler._languages))
     private static bookListItemProjection = {title: 1, author: 1, price: 1, state: 1}
 
     // Use DatabaseHandler.setup instead of normal constructor
     private constructor(){
         this.User = model<IUser>("User", userSchema)
         this.Language = model<ILanguage>("Language", languageSchema)
-        this.Category = model<ICategory>("Category", categorySchema)
+        this.Category = model<ICategoryFull>("Category", categorySchema)
         this.Book = model<IBook>("Book", bookSchema)
     }
 
-    static async setup(database: Database): Promise<DatabaseHandler>{
-        const handler = new DatabaseHandler();
+    static async setup(database: string | undefined): Promise<DatabaseHandler>{
+        if(!database) throw new Error("Database must be specified!")
+        await connect(`mongodb://127.0.0.1:27017/${database}`)
+        const handler = new DatabaseHandler()
         DatabaseHandler._categories = await handler.getCategories()
         DatabaseHandler._languages = await handler.getLanguages()
         return handler
     }
 
-    async getUser(email: string): Promise<IUser | null>
-    async getUser(id: Types.ObjectId): Promise<IUser | null>
-    async getUser(data: string | Types.ObjectId): Promise<IUser | null>{
+    async getUser(email: string): Promise<SessionUser>
+    async getUser(id: Types.ObjectId): Promise<SessionUser>
+    async getUser(data: string | Types.ObjectId): Promise<SessionUser>{
+        let user: SessionUser | null
         switch(typeof data){
             case "string":
-                return await this.User.findOne({email: data})
+                user = await this.User.findOne({email: data}, {email: 1})
+                break;
             case "object":
-                return await this.User.findById(data)
+                user = await this.User.findById(data, {email: 1})
+                break
             default:
                 throw new Error(`Wrong type provided to getUser function! Provided type: ${typeof data}`)
         }
+        if(!user) throw new Error("User not found!")
+        return user
     }
 
     async checkUserCredentials({email, password}: IUser): Promise<boolean>{
         try{
-            const maybeUser = await this.getUser(email)
+            const maybeUser: IUser | null = await this.User.findOne({email})
             const savedPassword = maybeUser?.password || ""
             return await bcrypt.compare(password, savedPassword)
         }
@@ -84,14 +91,14 @@ export class DatabaseHandler{
     }
 
     async getCategories(): Promise<ICategory[]>{
-        return await this.Category.find()
+        return await this.Category.find({}, {_id: 1, name: 1})
     }
 
     async getLanguages(): Promise<ILanguage[]>{
         return await this.Language.find()
     }
 
-    async getFullCategoryInfo(id: Types.ObjectId): Promise<ICategory | null>{
+    async getFullCategoryInfo(id: Types.ObjectId): Promise<ICategoryFull | null>{
         return await this.Category.findById(id)
     }
 
@@ -121,29 +128,18 @@ export class DatabaseHandler{
         // ) as IBookListItem[]
     }
 
-    async getBooksByTome(book: IBook): Promise<IBookListItem[]> {
+    async getBooksByTome(book: IBook | IBookFull): Promise<IBookListItem[]> {
         return this.Book.find(
             {$and: [
-                {"tome_info.tome_group": book.tome_info?.tome_group},
-                {$not: {_id: book._id}}
+                {tomeGroup: book.tomeGroup},
+                {_id: {$ne: book._id} }
             ]},
             DatabaseHandler.bookListItemProjection,
             {sort: {"tome_info.tome_number": 1}}
         )
-        // return (await this.database.formattedQuery(`
-        //     SELECT
-        //         id,
-        //         title,
-        //         author,
-        //         state,
-        //         price
-        //     FROM books
-        //     WHERE tome_group = ? AND id != ?
-        //     ORDER BY tome_number ASC;`, [book.tomeGroup, book.id])
-        // ) as IBookListItem[]
     }
 
-    async getBookById(id: Types.ObjectId): Promise<IBookFull | null> {
+    async getBookById(id: Types.ObjectId): Promise<IBookFull> {
         const aggregatePipeline = [
             {
                 $match: {_id: id}
@@ -188,26 +184,21 @@ export class DatabaseHandler{
                     state: 1,
                     price: 1,
                     quantity: 1,
-                    tome_info: 1,
+                    tomeNumber: 1,
+                    tomeGroup: 1,
                 },
             },
         ];
 
-        return await this.Book.aggregate(aggregatePipeline)[0] as IBookFull
+        return (await this.Book.aggregate(aggregatePipeline))[0]
     }
 
-    async getCartItems(cartSession: SessionCart | undefined): Promise<CartItem[]>{
-        if(!cartSession || Object.keys(cartSession.items).length === 0 ) return []
+    async getCartItems(cartSession: SessionCart | undefined): Promise<ICartItem[]>{
+        throw new Error("TODO")
+        /* if(!cartSession || Object.keys(cartSession.items).length === 0 ) return []
 
-        const selectedIds = Object.keys(cartSession.items).join(',')
-        const cartItems = await this.database.query(`
-            SELECT
-                b.id,
-                b.title,
-                b.price,
-                b.quantity as maxQuantity
-            FROM books b
-            WHERE b.id IN (${selectedIds});`) as CartItem[]
+        const selectedIds = Object.keys(cartSession.items)
+        const cartItems: ICartItem[] = (await this.Book.find({_id: {$in: selectedIds}}, {_id: 1, title: 1, price: 1, quantity: 1}))
 
         Object.entries(cartSession.items)
             .forEach(([bookId, {quantity}]) => {
@@ -215,11 +206,12 @@ export class DatabaseHandler{
                 if(found) found.quantity = quantity
             })
 
-        return cartItems
+        return cartItems */
     }
 
     async updateBooksPostPurchase(cartSession: SessionCart | undefined){
-        if(!cartSession || Object.keys(cartSession.items).length === 0 ) return []
+        throw new Error("TODO")
+        /* if(!cartSession || Object.keys(cartSession.items).length === 0 ) return []
 
         const selectedIds = Object.keys(cartSession.items).join(',')
         const caseStatemets =
@@ -235,6 +227,6 @@ export class DatabaseHandler{
                 ELSE quantity
             END
             WHERE id IN (${selectedIds})
-        `)
+        `) */
     }
 }

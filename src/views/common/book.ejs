@@ -1,12 +1,12 @@
-<% let {id, image, title, author, state, price} = book %>
-<div class="book" onClick="seeProduct(<%= id %>)">
+<% let {_id, image, title, author, state, price} = book %>
+<div class="book" onClick="seeProduct('<%= _id %>')">
     <img src="<%= typeof image === 'undefined' ? '/assets/missing_cover.png' : image %>" alt="cover" class="cover">
     <h1 class="title"><%= title %></h1>
     <h3 class="author"><%= author %></h3>
     <p class="state"><%= state %></p>
     <p class="price"><%= price %>zł</p>
     <form action="/cart/add" method="POST">
-        <input type="hidden" name="bookId" value="<%= id %>">
+        <input type="hidden" name="bookId" value="<%= _id %>">
         <button type="submit" class="add-to-cart">Do koszyka</button>
     </form>
 </div>

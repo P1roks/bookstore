@@ -37,7 +37,6 @@ export interface AuthRequest<ReqBody = any> extends express.Request<{}, {}, ReqB
     registerError?: string
 }
 
-
 // object send in by form to backend
 export interface RegisterUserTransfer{
     email: string,
@@ -47,7 +46,7 @@ export interface RegisterUserTransfer{
 }
 
 export interface SessionCart{
-    items: { [bookId: number]: SessionCartItem } // cart.items[bookId] = quantity
+    items: { [bookId: string]: SessionCartItem } // cart.items[bookId] = quantity
 }
 
 export interface SessionCartItem{
@@ -58,14 +57,6 @@ export interface SessionCartItem{
 export interface CartBookTransfer{
     bookId: string,
     quantity?: string,
-}
-
-export interface CartItem{
-    id: number,
-    title: string,
-    price: number,
-    maxQuantity: number,
-    quantity: number,
 }
 
 export interface CartSummary{
@@ -87,6 +78,10 @@ export interface IUser{
     password: string
 }
 
+export interface SessionUser{
+    email: string
+}
+
 export interface IBook{
     _id: Types.ObjectId,
     title: string,
@@ -94,13 +89,12 @@ export interface IBook{
     description: string,
     language: Types.ObjectId,
     category: Types.ObjectId,
+    subcategories: Types.ObjectId[],
     state: BookState,
     price: number,
     quantity: number,
-    tome_info: {
-       tome_number: number,
-       tome_group: number
-    } | undefined
+    tomeNumber: number | null,
+    tomeGroup: number | null
 }
 
 export interface ILanguage{
@@ -108,12 +102,20 @@ export interface ILanguage{
     name: string 
 }
 
+export interface ISubcategory{
+    _id: Types.ObjectId
+    name: string
+}
+
+export interface ICategoryFull{
+    _id: Types.ObjectId,
+    name: string,
+    subcategories: ISubcategory[]
+}
+
 export interface ICategory{
     _id: Types.ObjectId,
     name: string,
-    subcategories: [
-        name: string
-    ]
 }
 
 export interface IBookListItem{
@@ -135,8 +137,14 @@ export interface IBookFull{
     state: BookState,
     price: number,
     quantity: number,
-    tome_info: {
-       tome_number: number,
-       tome_group: number
-    } | undefined
+    tomeNumber: number | null,
+    tomeGroup: number | null
+}
+
+export interface ICartItem{
+    id: number,
+    title: string,
+    price: number,
+    maxQuantity: number,
+    quantity: number,
 }

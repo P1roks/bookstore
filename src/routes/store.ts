@@ -1,9 +1,9 @@
 import { Request, Router } from "express";
 import { db } from "..";
 import { DatabaseHandler } from "../models/db/handler";
-import { SearchHandler, SearchQueryParams } from "../models/search-handler";
 import { toNumber, toNumberArray, wrapArray } from "../utils";
 import { IBookListItem } from "../types";
+import { Types } from "mongoose";
 
 export const storeRouter = Router()
 
@@ -20,36 +20,33 @@ storeRouter.get("/", async (req, res, next) => {
 
 storeRouter.get("/book/:bookId", async (req, res, next) => {
     // display info about given book
-    const bookId = parseInt(req.params.bookId, 10)
+    try{
+        const bookId = new Types.ObjectId(req.params.bookId)
+        const book = await db.getBookById(bookId)
+        if(book){
+            let tomeBooks: IBookListItem[] = []
 
-    if(!isNaN(bookId)){
-        try{
-            const book = await db.getBookById(bookId)
-            if(book){
-                let tomeBooks: IBookListItem[] = []
-
-                if(book.tomeGroup !== null){
-                    tomeBooks = await db.getBooksByTome(book)
-                }
-
-                return res.render("bookDetails", {
-                    book,
-                    tomeBooks,
-                    categories: DatabaseHandler.getCategoriesObject(),
-                    user: req.session.user,
-                    cart: req.session.cart
-                })
+            if(book.tomeGroup){
+                tomeBooks = await db.getBooksByTome(book)
             }
+
+            return res.render("bookDetails", {
+                book,
+                tomeBooks,
+                categories: DatabaseHandler.getCategoriesObject(),
+                user: req.session.user,
+                cart: req.session.cart
+            })
         }
-        catch(error){
-            next(error)
-        }
+    }
+    catch(error){
+        next(error)
     }
 
     next() // 404
 })
 
-storeRouter.get("/search", (req, _, next) => {
+/* storeRouter.get("/search", (req, _, next) => {
     // parse query params to be of SearchQueryParams type
     const validKeys: { [key in keyof SearchQueryParams]: (value: any) => SearchQueryParams[key] | undefined } = {
         category: toNumber,
@@ -91,4 +88,4 @@ storeRouter.get("/search", (req, _, next) => {
     catch(error) {
         next(error)
     }
-})
+}) */

@@ -1,5 +1,6 @@
+import { Types } from "mongoose";
 import { db } from "..";
-import { IBook, SessionCart } from "../types";
+import { IBookFull, SessionCart } from "../types";
 
 export class CartHandler{
     private cart: SessionCart;
@@ -10,11 +11,11 @@ export class CartHandler{
         this.setCart = setCart
     }
 
-    async addBook(bookId: number, quantity: number){
-        let book: IBook
+    async addBook(bookId: string, quantity: number){
+        let book: IBookFull
 
         try{
-            book = await db.getBookById(bookId)
+            book = await db.getBookById(new Types.ObjectId(bookId))
         }
         catch{ return }
 
