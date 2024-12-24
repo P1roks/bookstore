@@ -23,7 +23,7 @@
                             <form class="item-quantity" method="POST" action="/cart/quantity">
                                 <input type="hidden" name="bookId" value="<%= item.id %>">
                                 <button type="submit" onclick="changeQuantity(this, -1)">-</button>
-                                <input type="number" name="quantity" class="no-spin" min="1" value="<%= item.quantity %>" max="<%= item.maxQuantity %>">
+                                <input type="number" name="quantity" class="no-spin" min="1" value="<%= item.orderQuantity %>" max="<%= item.quantity %>">
                                 <button type="submit" onclick="changeQuantity(this, 1)">+</button>
                             </form>
                             <form action="/cart/delete" method="POST" class="delete-form">

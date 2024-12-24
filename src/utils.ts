@@ -16,12 +16,14 @@ export const toNumberArray = (value: any[]): number[] | undefined => {
     return value
 }
 
+export const clamp = (no: number, min: number, max: number) => no > max ? max : no < min ? min : no
+
 export const genSummary = (cartItems: ICartItem[]): CartSummary => {
     const totalPrice = cartItems.reduce(
-        (accum, currentVal) => accum + currentVal.quantity * currentVal.price,
+        (accum, currentVal) => accum + currentVal.orderQuantity * currentVal.price,
         0
     )
-    const discountPercentage = Math.floor( totalPrice / 100 ) * 5
+    const discountPercentage = clamp(Math.floor( totalPrice / 100 ) * 5, 0, 25)
     const finalPrice = totalPrice * (100 - discountPercentage) / 100
     return {
         totalPrice,

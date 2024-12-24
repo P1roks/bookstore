@@ -2,7 +2,7 @@ import { Router } from "express";
 import { DatabaseHandler } from "../models/db/handler";
 import { verifyUser } from "../middleware/authMiddleware";
 import { CartHandler } from "../models/cart-handler";
-import { SessionCart } from "../types";
+import { ISessionCart } from "../types";
 
 export const userRouter = Router()
 
@@ -19,7 +19,7 @@ userRouter.get("/", (req, res) => res.render("infopage", {
 
 userRouter.get("/logout", verifyUser, (req, res) => {
     req.session.user = undefined
-    const handler = new CartHandler(req.session.cart, (cart: SessionCart) => {req.session.cart = cart})
+    const handler = new CartHandler(req.session.cart, (cart: ISessionCart) => {req.session.cart = cart})
     handler.clear()
     res.redirect("/")
 })

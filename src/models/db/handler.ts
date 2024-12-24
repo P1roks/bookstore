@@ -1,4 +1,4 @@
-import { BookProperty, IBook, IUser, SessionCart, IBookListItem, ILanguage, ICategoryFull, IBookFull, ICartItem, SessionUser, ICategory } from "../../types"
+import { BookProperty, IBook, IUser, ISessionCart, IBookListItem, ILanguage, ICategoryFull, IBookFull, ICartItem, SessionUser, ICategory } from "../../types"
 import bcrypt from 'bcrypt';
 import { bookSchema, categorySchema, languageSchema, userSchema } from "./schemas";
 import { connect, Model, model, Types } from "mongoose";
@@ -193,40 +193,33 @@ export class DatabaseHandler{
         return (await this.Book.aggregate(aggregatePipeline))[0]
     }
 
-    async getCartItems(cartSession: SessionCart | undefined): Promise<ICartItem[]>{
-        throw new Error("TODO")
-        /* if(!cartSession || Object.keys(cartSession.items).length === 0 ) return []
+    async getCartItems(cartSession: ISessionCart | undefined): Promise<ICartItem[]>{
+        if(!cartSession || Object.keys(cartSession.items).length === 0 ) return []
 
-        const selectedIds = Object.keys(cartSession.items)
-        const cartItems: ICartItem[] = (await this.Book.find({_id: {$in: selectedIds}}, {_id: 1, title: 1, price: 1, quantity: 1}))
+        const selectedIds = Object.keys(cartSession.items).map(key => new Types.ObjectId(key))
+        const cartItems: ICartItem[] = await this.Book.find({_id: {$in: selectedIds}}, {_id: 1, title: 1, price: 1, quantity: 1})
 
-        Object.entries(cartSession.items)
-            .forEach(([bookId, {quantity}]) => {
-                const found = cartItems.find(book => book.id === Number(bookId))
-                if(found) found.quantity = quantity
-            })
+        cartItems.forEach(cartItem => {
+            cartItem.orderQuantity = cartSession.items[cartItem._id].orderQuantity
+        })
 
-        return cartItems */
+        return cartItems
     }
 
-    async updateBooksPostPurchase(cartSession: SessionCart | undefined){
-        throw new Error("TODO")
-        /* if(!cartSession || Object.keys(cartSession.items).length === 0 ) return []
+    async updateBooksPostPurchase(cartSession: ISessionCart | undefined){
+        if(!cartSession || Object.keys(cartSession.items).length === 0 ) return []
 
-        const selectedIds = Object.keys(cartSession.items).join(',')
-        const caseStatemets =
-            Object
-            .entries(cartSession.items)
-            .map(([bookId, {quantity}]) => this.database.format(`WHEN id=? THEN quantity - ?`, [bookId, quantity]))
-            .join("\n")
+        const bulkOperations = 
+        Object.entries(cartSession.items)
+        .map(([bookId, {orderQuantity, quantity}]) => {
+            return {
+                    updateOne: {
+                        filter: {_id: new Types.ObjectId(bookId) },
+                        update: {quantity: quantity - orderQuantity}
+                    }
+                }
+        })
 
-        this.database.query(`
-            UPDATE books
-            SET quantity = CASE
-                ${caseStatemets}
-                ELSE quantity
-            END
-            WHERE id IN (${selectedIds})
-        `) */
+        await this.Book.bulkWrite(bulkOperations)
     }
 }

@@ -1,12 +1,12 @@
 import { Types } from "mongoose";
 import { db } from "..";
-import { IBookFull, SessionCart } from "../types";
+import { IBookFull, ISessionCart } from "../types";
 
 export class CartHandler{
-    private cart: SessionCart;
-    private setCart: (cart: SessionCart) => undefined
+    private cart: ISessionCart;
+    private setCart: (cart: ISessionCart) => undefined
 
-    constructor(sessionCart: SessionCart | undefined, setCart: (cart: SessionCart) => undefined){
+    constructor(sessionCart: ISessionCart | undefined, setCart: (cart: ISessionCart) => undefined){
         this.cart = sessionCart ? sessionCart : { items: {} }
         this.setCart = setCart
     }
@@ -20,19 +20,19 @@ export class CartHandler{
         catch{ return }
 
         if(book){
-            let newQuantity = this.cart.items[bookId] && this.cart.items[bookId].quantity ? this.cart.items[bookId].quantity + quantity : quantity
+            let newQuantity = this.cart.items[bookId] && this.cart.items[bookId].orderQuantity ? this.cart.items[bookId].orderQuantity + quantity : quantity
             if(newQuantity > book.quantity) newQuantity = book.quantity
-            this.cart.items[bookId] = { quantity: newQuantity, maxQuantity: book.quantity }
+            this.cart.items[bookId] = { orderQuantity: newQuantity, quantity: book.quantity }
             this.setCart(this.cart)
         }
     }
 
-    changeQuantity(bookId: number, newQuantity: number){
+    changeQuantity(bookId: string, newQuantity: number){
         if(!this.cart.items[bookId]) return
 
-        const maxQuantity = this.cart.items[bookId].maxQuantity
+        const maxQuantity = this.cart.items[bookId].quantity
         if(maxQuantity){
-            this.cart.items[bookId].quantity = newQuantity > maxQuantity ? maxQuantity : newQuantity
+            this.cart.items[bookId].orderQuantity = newQuantity > maxQuantity ? maxQuantity : newQuantity
             this.setCart(this.cart)
         }
     }

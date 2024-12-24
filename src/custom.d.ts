@@ -1,9 +1,9 @@
 import { Express } from "express-serve-static-core";
-import { SessionCart, User } from "./types";
+import { ISessionCart, User } from "./types";
 
 declare module "express-session" {
     export interface SessionData {
         user: User,
-        cart: SessionCart,
+        cart: ISessionCart,
     }
 }

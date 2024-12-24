@@ -1,4 +1,4 @@
-import { Database, BookProperty, IBook, CategoryInfoFull, IUser, User, SessionCart, CartItem, IBookListItem } from "../../types"
+import { Database, BookProperty, IBook, CategoryInfoFull, IUser, User, ISessionCart, CartItem, IBookListItem } from "../../types"
 import bcrypt from 'bcrypt';
 
 export class DatabaseHandler{
@@ -162,7 +162,7 @@ export class DatabaseHandler{
         )[0] as IBook
     }
 
-    async getCartItems(cartSession: SessionCart | undefined): Promise<CartItem[]>{
+    async getCartItems(cartSession: ISessionCart | undefined): Promise<CartItem[]>{
         if(!cartSession || Object.keys(cartSession.items).length === 0 ) return []
 
         const selectedIds = Object.keys(cartSession.items).join(',')
@@ -176,7 +176,7 @@ export class DatabaseHandler{
             WHERE b.id IN (${selectedIds});`) as CartItem[]
 
         Object.entries(cartSession.items)
-            .forEach(([bookId, {quantity}]) => {
+            .forEach(([bookId, {orderQuantity: quantity}]) => {
                 const found = cartItems.find(book => book.id === Number(bookId))
                 if(found) found.quantity = quantity
             })
@@ -184,14 +184,14 @@ export class DatabaseHandler{
         return cartItems
     }
 
-    async updateBooksPostPurchase(cartSession: SessionCart | undefined){
+    async updateBooksPostPurchase(cartSession: ISessionCart | undefined){
         if(!cartSession || Object.keys(cartSession.items).length === 0 ) return []
 
         const selectedIds = Object.keys(cartSession.items).join(',')
         const caseStatemets =
             Object
             .entries(cartSession.items)
-            .map(([bookId, {quantity}]) => this.database.format(`WHEN id=? THEN quantity - ?`, [bookId, quantity]))
+            .map(([bookId, {orderQuantity: quantity}]) => this.database.format(`WHEN id=? THEN quantity - ?`, [bookId, quantity]))
             .join("\n")
 
         this.database.query(`

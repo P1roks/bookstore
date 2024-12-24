@@ -11,7 +11,7 @@
     <body>
         <%- include("common/searchbar", {categories, user, cart}) %>
 
-        <% let {id, image, title, author, state, price, quantity, language, category, description, tomeNumber} = book %>
+        <% let {_id, image, title, author, state, price, quantity, language, category, description, tomeNumber} = book %>
         <main>
             <section id="book-details">
                 <span id="book-image">
@@ -33,7 +33,7 @@
 
                 <form action="/cart/add" method="POST" id="book-cart-options">
                     <h1 id="price"><%= price %>zł</h1>
-                    <input type="hidden" name="bookId" value="<%= id %>">
+                    <input type="hidden" name="bookId" value="<%= _id %>">
                     <span>
                         <label for="quantity">Liczba sztuk</label>
                         <div class="item-quantity">

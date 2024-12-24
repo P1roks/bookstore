@@ -45,14 +45,6 @@ export interface RegisterUserTransfer{
     terms?: "on",
 }
 
-export interface SessionCart{
-    items: { [bookId: string]: SessionCartItem } // cart.items[bookId] = quantity
-}
-
-export interface SessionCartItem{
-    quantity: number,
-    maxQuantity: number,
-}
 
 export interface CartBookTransfer{
     bookId: string,
@@ -141,10 +133,20 @@ export interface IBookFull{
     tomeGroup: number | null
 }
 
-export interface ICartItem{
-    id: number,
-    title: string,
-    price: number,
-    maxQuantity: number,
+export interface ISessionCartItem{
+    orderQuantity: number,
     quantity: number,
 }
+
+export interface ISessionCart{
+    items: { [bookId: string]: ISessionCartItem } // cart.items[bookId] = quantity
+}
+
+export interface ICartItem{
+    _id: number,
+    title: string,
+    price: number,
+    quantity: number,
+    orderQuantity: number,
+}
+
