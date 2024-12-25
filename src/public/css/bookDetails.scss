@@ -8,7 +8,13 @@
         background-color: $primary;
     }
 
+    #book-image img{
+        height: 40vh;
+        aspect-ratio: 7 / 10;
+    }
+
     #book-info{
+        box-sizing: border-box;
         padding: 2%;
         display: flex;
         flex-direction: column;

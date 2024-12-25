@@ -57,11 +57,16 @@ export interface CartSummary{
     finalPrice: number,
 }
 
-export enum BookState{
+export enum EBookState{
     NEW = "nowy",
     VGOOD = "bardzo dobry",
     GOOD = "dobry",
     BAD = "zniszczony"
+}
+
+export enum EBookCover{
+    HARD = "twarda",
+    SOFT = "miękka",
 }
 
 // MONGOOSE TYPES
@@ -74,19 +79,21 @@ export interface SessionUser{
     email: string
 }
 
+
 export interface IBook{
     _id: Types.ObjectId,
     title: string,
     author: string,
     description: string,
-    language: Types.ObjectId,
     category: Types.ObjectId,
     subcategories: Types.ObjectId[],
-    state: BookState,
     price: number,
     quantity: number,
     tomeNumber: number | null,
     tomeGroup: number | null
+    image: string | null,
+    language: Types.ObjectId,
+    state: EBookState,
 }
 
 export interface ILanguage{
@@ -115,7 +122,8 @@ export interface IBookListItem{
     title: string,
     author: string,
     price: number,
-    state: BookState,
+    state: EBookState,
+    image: string | null,
 }
 
 export interface IBookFull{
@@ -123,14 +131,15 @@ export interface IBookFull{
     title: string,
     author: string,
     description: string,
-    language: string,
     category: string,
     subcategories: string[],
-    state: BookState,
     price: number,
     quantity: number,
     tomeNumber: number | null,
     tomeGroup: number | null
+    image: string | null,
+    language: Types.ObjectId,
+    state: EBookState,
 }
 
 export interface ISessionCartItem{

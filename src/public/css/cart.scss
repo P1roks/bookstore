@@ -17,6 +17,7 @@
 
             img{
                 height: 10vh;
+                aspect-ratio: 7 / 10;
             }
 
             a{
@@ -56,12 +57,13 @@
 
         a{
             @include hover-button($accent, $onAccent, $accentDark);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
             grid-column: span 2;
             padding: 3%;
             font-size: 1.5rem;
             cursor: pointer;
-            text-align: center;
-            vertical-align: center;
             text-decoration: none;
         }
     }

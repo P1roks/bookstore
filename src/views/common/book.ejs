@@ -1,6 +1,6 @@
 <% let {_id, image, title, author, state, price} = book %>
 <div class="book" onClick="seeProduct('<%= _id %>')">
-    <img src="<%= typeof image === 'undefined' ? '/assets/missing_cover.png' : image %>" alt="cover" class="cover">
+    <img src="<%= typeof image === 'undefined' ? '/assets/covers/missing.png' : `/assets/covers/${image}` %>" alt="cover" class="cover">
     <h1 class="title"><%= title %></h1>
     <h3 class="author"><%= author %></h3>
     <p class="state"><%= state %></p>

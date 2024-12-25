@@ -1,6 +1,6 @@
 import { Model, model, Schema, Types } from "mongoose";
 import bcrypt from "bcrypt";
-import { BookState, IBook, ICategoryFull, ILanguage, IUser } from "../../types";
+import { EBookCover, EBookState, IBook, ICategoryFull, ILanguage, IUser } from "../../types";
 
 export const userSchema = new Schema<IUser>({
     password: {type: String, required: true},
@@ -36,7 +36,7 @@ export const bookSchema = new Schema<IBook>({
     title: {type: String, required: true},
     author: {type: String, required: true},
     description: {type: String, required: true},
-    state: {type: String, enum: BookState},
+    state: {type: String, enum: EBookState, index: true},
     language: {
         type: Schema.Types.ObjectId,
         ref: "Language",
@@ -64,5 +64,6 @@ export const bookSchema = new Schema<IBook>({
     quantity: {type: Number, required: true},
     price: {type: Number, required: true},
     tomeNumber: Number,
-    tomeGroup: Number
+    tomeGroup: Number,
+    image: String,
 })

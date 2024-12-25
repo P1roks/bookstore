@@ -37,7 +37,7 @@ export class DatabaseHandler{
     public static readonly getCategoriesObject = () => JSON.parse(JSON.stringify(DatabaseHandler._categories))
     public static readonly getStatesObject = () => JSON.parse(JSON.stringify(DatabaseHandler._states))
     public static readonly getLanguagesObject = () => JSON.parse(JSON.stringify(DatabaseHandler._languages))
-    private static bookListItemProjection = {title: 1, author: 1, price: 1, state: 1}
+    private static bookListItemProjection = {title: 1, author: 1, price: 1, state: 1, image: 1}
 
     // Use DatabaseHandler.setup instead of normal constructor
     private constructor(){
@@ -186,6 +186,7 @@ export class DatabaseHandler{
                     quantity: 1,
                     tomeNumber: 1,
                     tomeGroup: 1,
+                    image: 1,
                 },
             },
         ];
@@ -197,7 +198,7 @@ export class DatabaseHandler{
         if(!cartSession || Object.keys(cartSession.items).length === 0 ) return []
 
         const selectedIds = Object.keys(cartSession.items).map(key => new Types.ObjectId(key))
-        const cartItems: ICartItem[] = await this.Book.find({_id: {$in: selectedIds}}, {_id: 1, title: 1, price: 1, quantity: 1})
+        const cartItems: ICartItem[] = await this.Book.find({_id: {$in: selectedIds}}, {_id: 1, title: 1, price: 1, quantity: 1, image: 1})
 
         cartItems.forEach(cartItem => {
             cartItem.orderQuantity = cartSession.items[cartItem._id].orderQuantity

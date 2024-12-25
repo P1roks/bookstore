@@ -15,7 +15,7 @@
         <main>
             <section id="book-details">
                 <span id="book-image">
-                    <img src="<%= typeof image === 'undefined' ? '/assets/missing_cover.png' : image %>" alt="cover">
+                    <img src="<%= typeof image === 'undefined' ? '/assets/covers/missing.png' : `/assets/covers/${image}` %>" alt="cover">
                 </span>
 
                 <span id="book-info">
