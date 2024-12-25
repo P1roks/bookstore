@@ -1,170 +1,102 @@
-/* import mysql from 'mysql2';
-import { db } from ".."
-import { IBook, BookProperty, CategoryInfoFull } from "../types"
-import { DatabaseHandler } from './db/handler';
+import { db } from "..";
+import { EBookLanguage, EBookState, IBookListItem, IFilterField, IFilters, ISearchParams, ISubcategory } from "../types";
+import { DatabaseHandler } from "./db/handler";
 
-interface Filters{
-    title: string
-    state: BookProperty[],
-    language: BookProperty[],
-    selectedCategory: BookProperty[] | CategoryInfoFull,
-    minPrice: number | null,
-    maxPrice: number | null,
-}
-
-export interface SearchQueryParams{
-    category?: number,
-    subcategory?: number,
-    state?: number[],
-    language?: number[],
-    title?: string,
-    minPrice?: number,
-    maxPrice?: number,
-}
-
-interface SearchParamMetaData{
-    tableName: string,
-    columnName: string,
-    operation: Operation,
-}
-
-enum Operation{
-    Equal = "=",
-    Greater = ">",
-    GreaterEqual = ">=",
-    Less = "<",
-    LessEqual = "<=",
-    Includes = "LIKE",
-}
-
-interface SQLSearchParam<T> extends SearchParamMetaData{
-    lookupValue: T,
-}
+const makeEnumField = (name: string, displayName: string, enumValues: string[]): IFilterField => ({
+    name,
+    displayName,
+    entries: enumValues.map(option => ({
+        queryValue: option,
+        displayName: option,
+        checked: false
+    }))
+})
 
 export class SearchHandler{
-    // provided via req.query
-    private filters: SearchQueryParams
+    private static readonly stateField: IFilterField = makeEnumField("state", "Stan", Object.values(EBookState))
+    private static readonly languageField: IFilterField = makeEnumField("language", "Język", Object.values(EBookLanguage))
+    private query: ISearchParams
 
-    constructor(filters: SearchQueryParams){
-        this.filters = filters
+    public constructor(query: ISearchParams){
+        this.query = query
     }
 
-    private static createSearchParam = <T>({ tableName, columnName, operation }: SearchParamMetaData): (value: T) => SQLSearchParam<T> => (
-        (value: T): SQLSearchParam<T> => ({
-              lookupValue: value,
-              tableName,
-              columnName,
-              operation,
-        })
-    )
+    async getFilteredBooks(): Promise<IBookListItem[]>{
+        let filters: any[] = []
 
-    private static searchParams: { [key in keyof Required<SearchQueryParams>]: (value: Required<SearchQueryParams>[key]) => SQLSearchParam<Required<SearchQueryParams>[key]> } = {
-        category: SearchHandler.createSearchParam<number>({
-            tableName: "categories",
-            columnName: "id",
-            operation: Operation.Equal,
-        }),
-        title: SearchHandler.createSearchParam<string>({
-            tableName: "books",
-            columnName: "title",
-            operation: Operation.Includes,
-        }),
-        subcategory: SearchHandler.createSearchParam<number>({
-            tableName: "subcategories",
-            columnName: "id",
-            operation: Operation.Equal,
-        }),
-        language: SearchHandler.createSearchParam<number[]>({
-            tableName: "languages",
-            columnName: "id",
-            operation: Operation.Equal,
-        }),
-        state: SearchHandler.createSearchParam<number[]>({
-            tableName: "books",
-            columnName: "state",
-            operation: Operation.Equal,
-        }),
-        minPrice: SearchHandler.createSearchParam<number>({
-            tableName: "books",
-            columnName: "price",
-            operation: Operation.GreaterEqual,
-        }),
-        maxPrice: SearchHandler.createSearchParam<number>({
-            tableName: "books",
-            columnName: "price",
-            operation: Operation.LessEqual,
-        })
-    }
-
-    // convert each SQLSearchParam to corresponding SQL code
-    private static toSQL = (param: SQLSearchParam<any>): string => {
-        if(!Array.isArray(param.lookupValue)){
-            if(param.operation === Operation.Includes){
-                param.lookupValue = `%${param.lookupValue}%`
+        for(const [key, val] of Object.entries(this.query)){
+            switch (key as keyof ISearchParams){
+                case "title":
+                    filters.push({[key]: new RegExp(`.*${val}.*`, "i")})
+                    break
+                case "category":
+                case "subcategories":
+                    filters.push({[key]: val})
+                    break
+                case "extraFields":
+                    for(const field of val){
+                        filters.push({[field.name]: field.values})
+                    }
+                    break
+                case "minPrice":
+                    filters.push({price: {$gte: val}})
+                    break
+                case "maxPrice": 
+                    filters.push({price: {$lte: val}})
+                    break
             }
-           return mysql.format(`??.?? ${param.operation} ?`, [param.tableName, param.columnName, param.lookupValue])
         }
-        else{
-           let placeholders = param.lookupValue.map(() => "?").join(", ") 
-           return mysql.format(`??.?? IN (${placeholders})`, [param.tableName, param.columnName, ...param.lookupValue])
-        }
-    }
-    
-    // convert all defined params to SQL code and merge them with AND statements
-    private getSQLConstraints(): string{
-        return Object.entries(this.filters).map(([key, value]) => {
-            try{
-                return SearchHandler.toSQL(SearchHandler.searchParams[key](value))
-            }
-            catch{
-                return null
-            }
-        }).filter(val => val !== null).join(" AND ")
+        return await db.getBooksWithConstraint({$and: filters})
     }
 
-    // filter books according to provided params
-    async getFilteredBooks(): Promise<IBook[]>{
-        return await db.getBooksWithConstraint(this.getSQLConstraints()) as IBook[]
-    }
-
-    // generate sidebar filters state, so they can stay filled in between site reloads
-    async getFiltersState(): Promise<Filters>{
-        const filtersState: Filters = {
-            title: "",
-            state: DatabaseHandler.getStatesObject(),
-            language: DatabaseHandler.getLanguagesObject(),
-            selectedCategory: DatabaseHandler.getCategoriesObject(),
-            minPrice: null,
-            maxPrice: null,
-        }
-
-        for(const [key, value] of Object.entries(this.filters)){
-            // if at least category is selected, get its info and try changing to selecterd subcategory, if it exists
-            if(key === "category"){
-                filtersState.selectedCategory = await db.getFullCategoryInfo(value)
-
-                const subcategory = this.filters["subcategory"]
-                if(subcategory){
-                    const subIndex = filtersState.selectedCategory.subcategories.findIndex(sub => sub.id === subcategory)
-                    if(subIndex !== -1){
-                        filtersState.selectedCategory.subcategories[subIndex].checked = true;
-                        // Always display selected subcategory as the first item
-                        const temp = filtersState.selectedCategory.subcategories[0]
-                        filtersState.selectedCategory.subcategories[0] = filtersState.selectedCategory.subcategories[subIndex]
-                        filtersState.selectedCategory.subcategories[subIndex] = temp
+    async getCurrentFilters(): Promise<IFilters>{
+        const fields = [structuredClone(SearchHandler.stateField), structuredClone(SearchHandler.languageField)]
+        if(this.query.extraFields){
+            for(const searchField of this.query.extraFields){
+                const selectedField = fields.find(field => field.name === searchField.name)
+                if(selectedField){
+                    for(const selected of searchField.values){
+                        const found = selectedField.entries.find(f => f.queryValue === selected)
+                        if(found){
+                            found.checked = true
+                        }
                     }
                 }
             }
-            // if the value is multi-choice (i.e. array) then mark all present values as selected
-            else if(Object.hasOwn(filtersState, key) && Array.isArray(value)){
-                filtersState[key].filter((field: BookProperty) => value.includes(field.id)).map((f: BookProperty) => f.checked = true)
-            }
-            // if value exists, set corresponding filter to it
-            else if(Object.hasOwn(filtersState, key)){
-                filtersState[key] = value
+        }
+
+        let res: IFilters = {
+            searchText: this.query.title,
+            minPrice: this.query.minPrice,
+            maxPrice: this.query.maxPrice,
+            fields,
+        }
+
+        if(this.query.category){
+            const fullCategory = await db.getFullCategoryInfo(this.query.category) 
+            if(fullCategory){
+                res.selectedCategory = {
+                    _id: this.query.category,
+                    name: fullCategory.name,
+                    subcategories: fullCategory.subcategories
+                }
+                if(this.query.subcategories){
+                    const selectedSubcategoryIdx = res.selectedCategory.subcategories
+                        .findIndex(sub => sub._id.equals(this.query.subcategories))
+                    if(selectedSubcategoryIdx !== -1){
+                        const selectedSubcategory = res.selectedCategory.subcategories[selectedSubcategoryIdx]
+                        selectedSubcategory.selected = true
+                        res.selectedCategory.subcategories.splice(selectedSubcategoryIdx, 1)
+                        res.selectedCategory.subcategories.splice(0, 0, selectedSubcategory)
+                    }
+                }
             }
         }
 
-        return filtersState
+        if(!res.selectedCategory){
+            res.categories = DatabaseHandler.getCategoriesObject()
+        }
+
+        return res
     }
-} */
+}

@@ -1,3 +1,4 @@
+import { Types } from "mongoose"
 import { CartSummary, ICartItem } from "./types"
 
 export const toNumber = (value: any): number | undefined => {
@@ -5,16 +6,16 @@ export const toNumber = (value: any): number | undefined => {
     return isNaN(res) ? undefined : res
 }
 
-export const wrapArray = (value: number | undefined): number[] | undefined => value === undefined ? undefined : [value]
-
-export const toNumberArray = (value: any[]): number[] | undefined => {
-    for(let i = 0; i < value.length; ++i){
-        const res = parseInt(value[i], 10)
-        if(isNaN(res)) return undefined
-        value[i] = res
+export const toObjectId = (value: string): Types.ObjectId | undefined => {
+    try{
+        return new Types.ObjectId(value)
     }
-    return value
+    catch{
+        return
+    }
 }
+
+export const wrapArray = (value: string | undefined): string[] | null => value === undefined ? null : [value]
 
 export const clamp = (no: number, min: number, max: number) => no > max ? max : no < min ? min : no
 

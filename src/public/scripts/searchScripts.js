@@ -6,8 +6,8 @@ function changeQueryParam(key, val){
 
 function switchToBroaderCategory(){
     let currentParams = new URLSearchParams(window.location.search)
-    if(currentParams.has("subcategory")){
-        currentParams.delete("subcategory")
+    if(currentParams.has("subcategories")){
+        currentParams.delete("subcategories")
     }else {
         currentParams.delete("category")
     }

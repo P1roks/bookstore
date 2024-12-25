@@ -1,9 +1,10 @@
 import { Request, Router } from "express";
 import { db } from "..";
 import { DatabaseHandler } from "../models/db/handler";
-import { toNumber, toNumberArray, wrapArray } from "../utils";
-import { IBookListItem } from "../types";
+import { toNumber, toObjectId, wrapArray } from "../utils";
+import { IBookListItem, ISearchParams } from "../types";
 import { Types } from "mongoose";
+import { SearchHandler } from "../models/search-handler";
 
 export const storeRouter = Router()
 
@@ -46,37 +47,45 @@ storeRouter.get("/book/:bookId", async (req, res, next) => {
     next() // 404
 })
 
-/* storeRouter.get("/search", (req, _, next) => {
+storeRouter.get("/search", (req, _, next) => {
     // parse query params to be of SearchQueryParams type
-    const validKeys: { [key in keyof SearchQueryParams]: (value: any) => SearchQueryParams[key] | undefined } = {
-        category: toNumber,
-        subcategory: toNumber,
-        state: value => Array.isArray(value) ? toNumberArray(value) : wrapArray(toNumber(value)),
-        language: value => Array.isArray(value) ? toNumberArray(value) : wrapArray(toNumber(value)),
-        title: value => value,
-        minPrice: toNumber,
-        maxPrice: toNumber,
-    };
-
-    const result: SearchQueryParams = {};
+    const result: ISearchParams = {};
 
     for (const [key, val] of Object.entries(req.query)) {
-        if (key in validKeys) {
-            const converted = validKeys[key](val)
-            if(converted){
-                result[key] = converted
-            }
+        switch (key as keyof ISearchParams){
+            case "category":
+            case "subcategories":
+                result[key] = toObjectId(val as string)
+                break
+            case "title":
+                if(typeof val === "string"){
+                    result[key] = val
+                }
+                break
+            case "minPrice":
+            case "maxPrice":
+                result[key] = toNumber(val)
+                break
+            default:
+                if(["language", "state"].includes(key)){
+                    if(!result.extraFields) result.extraFields = []
+                    result.extraFields.push({
+                        name: key,
+                        values: (Array.isArray(val) ? val : wrapArray(val as string)) as string[]
+                    })
+                }
+                break
         }
     }
 
     req.query = result as any;
     next()
-}, async (req: Request<{}, {}, {}, SearchQueryParams>, res, next) => {
+}, async (req: Request<{}, {}, {}, ISearchParams>, res, next) => {
     // search page, display books based on search params
     try {
         const handler = new SearchHandler(req.query);
-        let books = await handler.getFilteredBooks()
-        let filters = await handler.getFiltersState()
+        const books = await handler.getFilteredBooks()
+        const filters = await handler.getCurrentFilters()
         res.render("search", {
             books,
             categories: DatabaseHandler.getCategoriesObject(),
@@ -88,4 +97,4 @@ storeRouter.get("/book/:bookId", async (req, res, next) => {
     catch(error) {
         next(error)
     }
-}) */
+})

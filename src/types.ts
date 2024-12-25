@@ -64,9 +64,9 @@ export enum EBookState{
     BAD = "zniszczony"
 }
 
-export enum EBookCover{
-    HARD = "twarda",
-    SOFT = "miękka",
+export enum EBookLanguage{
+    ENGLISH = "Angielski",
+    POLISH = "Polski",
 }
 
 // MONGOOSE TYPES
@@ -92,7 +92,7 @@ export interface IBook{
     tomeNumber: number | null,
     tomeGroup: number | null
     image: string | null,
-    language: Types.ObjectId,
+    language: EBookLanguage,
     state: EBookState,
 }
 
@@ -138,7 +138,7 @@ export interface IBookFull{
     tomeNumber: number | null,
     tomeGroup: number | null
     image: string | null,
-    language: Types.ObjectId,
+    language: EBookLanguage,
     state: EBookState,
 }
 
@@ -159,3 +159,46 @@ export interface ICartItem{
     orderQuantity: number,
 }
 
+interface IEntry{
+    queryValue: string
+    displayName: string,
+    checked: boolean,
+}
+
+export interface IFilterField{
+    name: string,
+    displayName: string,
+    entries: IEntry[]
+}
+
+export interface IFilters{
+    searchText?: string,
+    minPrice?: number,
+    maxPrice?: number,
+    fields?: IFilterField[],
+    selectedCategory?: {
+        _id: Types.ObjectId,
+        name: string,
+        subcategories: {
+            _id: Types.ObjectId,
+            name: string,
+            selected?: boolean
+        }[]
+    }
+    categories?: {
+        queryValue: string,
+        name: string
+    }[]
+}
+
+export interface ISearchParams{
+    category?: Types.ObjectId,
+    subcategories?: Types.ObjectId,
+    title?: string,
+    minPrice?: number,
+    maxPrice?: number,
+    extraFields?: {
+        name: string,
+        values: string[]
+    }[]
+}

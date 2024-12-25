@@ -1,23 +1,17 @@
 import { connect, Model, model } from "mongoose"
-import { EBookState, IBook, ICategoryFull, ILanguage, IUser } from "./types"
-import { bookSchema, categorySchema, languageSchema, userSchema } from "./models/db/schemas"
+import { EBookLanguage, EBookState, IBook, ICategoryFull, ILanguage, IUser } from "./types"
+import { bookSchema, categorySchema, userSchema } from "./models/db/schemas"
 
 export const populateDb = async (database: string | undefined) => {
     if(!database) throw new Error("Database must be specified!")
     const connection = await connect(`mongodb://127.0.0.1:27017/${database}`)
     const User: Model<IUser> = model<IUser>("User", userSchema)
-    const Language: Model<ILanguage> = model<ILanguage>("Language", languageSchema)
     const Category: Model<ICategoryFull> = model<ICategoryFull>("Category", categorySchema)
     const Book: Model<IBook> = model<IBook>("Book", bookSchema)
 
     if(process.env.TRUNCATE){
         await connection.connection.dropDatabase()
     }
-
-    const languageIds = (await Language.insertMany([
-        { name: "Polski" },
-        { name: "Angielski" }
-    ])).map(full => full._id)
 
     const categories: ICategoryFull[] = await Category.insertMany([
         {
@@ -69,7 +63,7 @@ export const populateDb = async (database: string | undefined) => {
             author: "Bolesław Prus",
             description: "Historia miłosna i obraz społeczeństwa XIX wieku.",
             state: EBookState.GOOD,
-            language: languageIds[0],
+            language: EBookLanguage.POLISH,
             category: categories[0]._id,
             subcategories: [categories[0].subcategories[3]._id],
             quantity: 5,
@@ -80,7 +74,7 @@ export const populateDb = async (database: string | undefined) => {
             author: "Henryk Sienkiewicz",
             description: "Opowieść o przygodach Stasia i Nel w Afryce.",
             state: EBookState.VGOOD,
-            language: languageIds[0],
+            language: EBookLanguage.POLISH,
             category: categories[4]._id,
             subcategories: [categories[4].subcategories[1]._id],
             quantity: 10,
@@ -91,7 +85,7 @@ export const populateDb = async (database: string | undefined) => {
             author: "Adam Mickiewicz",
             description: "Epicka opowieść o życiu szlachty polskiej na Litwie.",
             state: EBookState.NEW,
-            language: languageIds[0],
+            language: EBookLanguage.POLISH,
             category: categories[3]._id,
             subcategories: [categories[3].subcategories[0]._id],
             quantity: 7,
@@ -102,7 +96,7 @@ export const populateDb = async (database: string | undefined) => {
             author: "Stanisław Lem",
             description: "Historia eksploracji tajemniczej planety Solaris.",
             state: EBookState.NEW,
-            language: languageIds[1],
+            language: EBookLanguage.ENGLISH,
             category: categories[0]._id,
             subcategories: [categories[0].subcategories[0]._id],
             quantity: 15,
@@ -113,7 +107,7 @@ export const populateDb = async (database: string | undefined) => {
             author: "Michaił Bułhakow",
             description: "Mistyczna opowieść o miłości i władzy.",
             state: EBookState.VGOOD,
-            language: languageIds[1],
+            language: EBookLanguage.ENGLISH,
             category: categories[0]._id,
             subcategories: [categories[0].subcategories[0]._id, categories[0].subcategories[2]._id],
             quantity: 8,
@@ -124,7 +118,7 @@ export const populateDb = async (database: string | undefined) => {
             author: "Władysław Orlicz",
             description: "Wprowadzenie do podstaw matematyki dla studentów.",
             state: EBookState.GOOD,
-            language: languageIds[0],
+            language: EBookLanguage.POLISH,
             category: categories[1]._id,
             subcategories: [categories[1].subcategories[0]._id],
             quantity: 12,
@@ -135,7 +129,7 @@ export const populateDb = async (database: string | undefined) => {
             author: "Albert Einstein",
             description: "Wyjaśnienie teorii względności przez jej twórcę.",
             state: EBookState.NEW,
-            language: languageIds[1],
+            language: EBookLanguage.ENGLISH,
             category: categories[1]._id,
             subcategories: [categories[1].subcategories[1]._id],
             quantity: 6,
@@ -146,7 +140,7 @@ export const populateDb = async (database: string | undefined) => {
             author: "National Geographic",
             description: "Kompletny atlas świata z mapami i zdjęciami.",
             state: EBookState.VGOOD,
-            language: languageIds[0],
+            language: EBookLanguage.POLISH,
             category: categories[4]._id,
             subcategories: [categories[4].subcategories[2]._id],
             quantity: 20,
@@ -157,7 +151,7 @@ export const populateDb = async (database: string | undefined) => {
             author: "Ernst Gombrich",
             description: "Przegląd historii sztuki od starożytności do współczesności.",
             state: EBookState.GOOD,
-            language: languageIds[1],
+            language: EBookLanguage.ENGLISH,
             category: categories[2]._id,
             subcategories: [categories[2].subcategories[0]._id],
             quantity: 10,
@@ -168,7 +162,7 @@ export const populateDb = async (database: string | undefined) => {
             author: "Jan Krzeptowski",
             description: "Praktyczny przewodnik po szlakach tatrzańskich.",
             state: EBookState.VGOOD,
-            language: languageIds[0],
+            language: EBookLanguage.POLISH,
             category: categories[4]._id,
             subcategories: [categories[4].subcategories[0]._id],
             quantity: 8,
@@ -179,9 +173,9 @@ export const populateDb = async (database: string | undefined) => {
             author: "Andrzej Sapkowski",
             description: "Pierwsza część opowieści o Geralcie z Rivii.",
             state: EBookState.NEW,
-            language: languageIds[0],
+            language: EBookLanguage.POLISH,
             category: categories[0]._id,
-            subcategories: [categories[0].subcategories[0]._id],
+            subcategories: [categories[0].subcategories[0]._id, categories[0].subcategories[3]],
             quantity: 10,
             price: 39.99,
             tomeNumber: 1,
@@ -193,7 +187,7 @@ export const populateDb = async (database: string | undefined) => {
             author: "Andrzej Sapkowski",
             description: "Kontynuacja przygód Geralta z Rivii.",
             state: EBookState.NEW,
-            language: languageIds[0],
+            language: EBookLanguage.POLISH,
             category: categories[0]._id,
             subcategories: [categories[0].subcategories[0]._id],
             quantity: 10,
@@ -207,7 +201,7 @@ export const populateDb = async (database: string | undefined) => {
             author: "Andrzej Sapkowski",
             description: "Pierwsza pełnoprawna powieść w Sadze Wiedźmińskiej.",
             state: EBookState.NEW,
-            language: languageIds[0],
+            language: EBookLanguage.POLISH,
             category: categories[0]._id,
             subcategories: [categories[0].subcategories[0]._id],
             quantity: 10,
@@ -221,7 +215,7 @@ export const populateDb = async (database: string | undefined) => {
             author: "Henryk Sienkiewicz",
             description: "Pierwsza część Trylogii o walkach w XVII wieku.",
             state: EBookState.GOOD,
-            language: languageIds[0],
+            language: EBookLanguage.POLISH,
             category: categories[3]._id,
             subcategories: [categories[3].subcategories[1]._id],
             quantity: 15,
@@ -235,7 +229,7 @@ export const populateDb = async (database: string | undefined) => {
             author: "Henryk Sienkiewicz",
             description: "Kontynuacja Trylogii, opowieść o szwedzkim potopie.",
             state: EBookState.GOOD,
-            language: languageIds[0],
+            language: EBookLanguage.POLISH,
             category: categories[3]._id,
             subcategories: [categories[3].subcategories[1]._id],
             quantity: 15,
@@ -249,7 +243,7 @@ export const populateDb = async (database: string | undefined) => {
             author: "Henryk Sienkiewicz",
             description: "Ostatnia część tryologii",
             state: EBookState.GOOD,
-            language: languageIds[0],
+            language: EBookLanguage.POLISH,
             category: categories[3]._id,
             subcategories: [categories[3].subcategories[1]._id],
             quantity: 15,
@@ -263,7 +257,7 @@ export const populateDb = async (database: string | undefined) => {
             author: "C.S. Lewis",
             description: "Pierwsza część magicznych przygód w Narnii.",
             state: EBookState.VGOOD,
-            language: languageIds[1],
+            language: EBookLanguage.ENGLISH,
             category: categories[0]._id,
             subcategories: [categories[0].subcategories[0]._id],
             quantity: 10,
@@ -276,7 +270,7 @@ export const populateDb = async (database: string | undefined) => {
             author: "C.S. Lewis",
             description: "Druga część magicznych przygód w Narnii.",
             state: EBookState.VGOOD,
-            language: languageIds[1],
+            language: EBookLanguage.ENGLISH,
             category: categories[0]._id,
             subcategories: [categories[0].subcategories[0]._id],
             quantity: 10,
@@ -289,7 +283,7 @@ export const populateDb = async (database: string | undefined) => {
             author: "C.S. Lewis",
             description: "Trzecia część magicznych przygód w Narnii.",
             state: EBookState.VGOOD,
-            language: languageIds[1],
+            language: EBookLanguage.ENGLISH,
             category: categories[0]._id,
             subcategories: [categories[0].subcategories[0]._id],
             quantity: 10,
@@ -302,7 +296,7 @@ export const populateDb = async (database: string | undefined) => {
             author: "C.S. Lewis",
             description: "Czwarta część magicznych przygód w Narnii.",
             state: EBookState.VGOOD,
-            language: languageIds[1],
+            language: EBookLanguage.ENGLISH,
             category: categories[0]._id,
             subcategories: [categories[0].subcategories[0]._id],
             quantity: 10,
@@ -314,14 +308,25 @@ export const populateDb = async (database: string | undefined) => {
             title: "Kroniki Narnii: Koń i jego chłopiec",
             author: "C.S. Lewis",
             description: "Piąta część magicznych przygód w Narnii.",
-            state: EBookState.VGOOD,
-            language: languageIds[1],
+            state: EBookState.BAD,
+            language: EBookLanguage.ENGLISH,
             category: categories[0]._id,
             subcategories: [categories[0].subcategories[0]._id],
             quantity: 10,
             price: 29.99,
             tomeNumber: 5,
             tomeGroup: 3,
+        },
+        {
+            title: "Wprowadzenie do Biomatematyki",
+            author: "J.D. Murray",
+            description: "Klasyczny już i podstawowy podręcznik modelowania matematycznego w biologii i naukach pokrewnych, napisany przez zasłużonego profesora uniwersytetów w Oksfordzie i Waszyngtonie. Obejmuje bardzo szeroki zakres zagadnień, m.in. prezentuje metody matematyczne stosowane w ekologii, ochronie środowiska, fizjologii człowieka, epidemiologii, immunologii, onkologii, psychologii, socjologii, chemii i biochemii, medycynie i weterynarii oraz leśnictwa. W ciekawych wstępach historycznych autor przedstawia historię badań nad danym problemem. Omawia również konsekwencje praktyczne stosowanych modeli.",
+            state: EBookState.NEW,
+            language: EBookLanguage.ENGLISH,
+            category: categories[1]._id,
+            subcategories: [categories[1].subcategories[0]._id, categories[1].subcategories[2]._id],
+            quantity: 10,
+            price: 59.99,
         },
     ]);
 

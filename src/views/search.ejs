@@ -9,43 +9,33 @@
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
     </head>
     <body>
-        <%- include("common/searchbar", {categories, user, cart, searchText: filters.title}) %>
+        <%- include("common/searchbar", {categories, user, cart, searchText: filters.searchText}) %>
 
         <main>
             <div id="filtered-search">
                 <section id="filters">
                     <div class="filter-section categories">
-                        <% if(typeof filters.selectedCategory.subcategories !== "undefined") { %>
+                        <% if(typeof filters.selectedCategory !== "undefined") { %>
                             <h2>Podkategorie <%= filters.selectedCategory.name %>:</h2>
-                            <% if (filters.selectedCategory.subcategories[0].checked) { %>
+                            <% if (filters.selectedCategory.subcategories[0].selected) { %>
                                 <p>Powrót do <a onClick="switchToBroaderCategory()"><%= filters.selectedCategory.name %> </a></p>
                             <% } else { %>
                                 <p>Powrót do <a onClick="switchToBroaderCategory()">Kategorii</a></p>
                             <% } %>
                             <ul>
                                 <% filters.selectedCategory.subcategories.forEach(subcategory => { %>
-                                    <li class="category <% if(subcategory.checked) { %> selected <% } %>"
-                                        onClick="changeQueryParam('subcategory', <%= subcategory.id %>)"><%= subcategory.name %></li>
+                                    <li class="category <% if(subcategory.selected) { %> selected <% } %>"
+                                        onClick="changeQueryParam('subcategories', '<%= subcategory._id %>')"><%= subcategory.name %></li>
                                 <% }) %>
                             </ul>
                         <% } else { %>
                             <h2>Kategorie </h2>
                             <ul>
-                                <% filters.selectedCategory.forEach(category => { %>
-                                    <li class="category" onClick="changeQueryParam('category', <%= category.id %>)"><%= category.name %></li>
+                                <% filters.categories.forEach(category => { %>
+                                    <li class="category" onClick="changeQueryParam('category', '<%= category._id %>')"><%= category.name %></li>
                                 <% }) %>
                             </ul>
                         <% } %>
-                    </div>
-
-                    <div class="filter-section state">
-                        <h2>Stan:</h2>
-                        <% filters.state.forEach(state => { %>
-                            <span>
-                                <input type="checkbox" name="state" id="state-<%= state.id %>" value="<%= state.id %>" <% if(state.checked) { %> checked <% } %>>
-                                <label for="state-<%= state.id %>"><%= state.name %></label>
-                            </span>
-                        <% }) %>
                     </div>
 
                     <div class="filter-section price">
@@ -57,15 +47,18 @@
                         </span>
                     </div>
 
-                    <div class="filter-section language">
-                        <h2>Język:</h2>
-                        <% filters.language.forEach(language => { %>
-                            <span>
-                                <input type="checkbox" name="language" id="language-<%= language.id %>" value="<%= language.id %>" <% if(language.checked) { %> checked <% } %>>
-                                <label for="language-<%= language.id %>"><%= language.name %></label>
-                            </span>
-                        <% }) %>
-                    </div>
+                    <% filters.fields.forEach(field => { %>
+                        <div class="filter-section <%= field.name %>">
+                            <h2><%= field.displayName %></h2>
+                            <% field.entries.forEach(entry => { %>
+                                <span>
+                                    <input type="checkbox" name="<%= field.name %>" id="entry-<%= entry.queryValue %>"
+                                        value="<%= entry.queryValue %>" <% if(entry.checked) { %> checked <% } %>>
+                                    <label for="entry-<%= entry.queryValue %>"><%= entry.displayName %></label>
+                                </span>
+                            <% }) %>
+                        </div>
+                    <% }) %>
 
                     <button id="filter-button" onClick="filterBooks()">Filtruj</button>
                 </section>
