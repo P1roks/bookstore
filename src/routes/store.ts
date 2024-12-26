@@ -3,8 +3,8 @@ import { db } from "..";
 import { DatabaseHandler } from "../models/db/handler";
 import { toNumber, toObjectId, wrapArray } from "../utils";
 import { IBookListItem, ISearchParams } from "../types";
-import { Types } from "mongoose";
 import { SearchHandler } from "../models/search-handler";
+import { ObjectId } from "mongodb";
 
 export const storeRouter = Router()
 
@@ -22,10 +22,10 @@ storeRouter.get("/", async (req, res, next) => {
 storeRouter.get("/book/:bookId", async (req, res, next) => {
     // display info about given book
     try{
-        if(!Types.ObjectId.isValid(req.params.bookId)){
+        if(!ObjectId.isValid(req.params.bookId)){
             return next() // 404
         }
-        const bookId = new Types.ObjectId(req.params.bookId)
+        const bookId = new ObjectId(req.params.bookId)
         const book = await db.getBookById(bookId)
         if(book){
             let tomeBooks: IBookListItem[] = []

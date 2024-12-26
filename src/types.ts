@@ -1,5 +1,5 @@
 import express from 'express';
-import { Types } from 'mongoose';
+import { ObjectId } from 'mongodb';
 
 export enum EBookState{
     NEW = "nowy",
@@ -55,39 +55,39 @@ export interface SessionUser{
 }
 
 export interface IBook{
-    _id: Types.ObjectId,
+    _id: ObjectId,
     title: string,
     author: string,
     description: string,
-    category: Types.ObjectId,
-    subcategories: Types.ObjectId[],
+    category: ObjectId,
+    subcategories: ObjectId[],
     price: number,
     quantity: number,
     tomeNumber: number | null,
-    tomeGroup: number | null
+    tomeGroup: number | null,
     image: string | null,
     language: EBookLanguage,
     state: EBookState,
 }
 
 export interface ISubcategory{
-    _id: Types.ObjectId
+    _id: ObjectId
     name: string
 }
 
 export interface ICategoryFull{
-    _id: Types.ObjectId,
+    _id: ObjectId,
     name: string,
     subcategories: ISubcategory[]
 }
 
 export interface ICategory{
-    _id: Types.ObjectId,
+    _id: ObjectId,
     name: string,
 }
 
 export interface IBookListItem{
-    _id: Types.ObjectId,
+    _id: ObjectId,
     title: string,
     author: string,
     price: number,
@@ -96,7 +96,7 @@ export interface IBookListItem{
 }
 
 export interface IBookFull{
-    _id: Types.ObjectId,
+    _id: ObjectId,
     title: string,
     author: string,
     description: string,
@@ -121,7 +121,7 @@ export interface ISessionCart{
 }
 
 export interface ICartItem{
-    _id: number,
+    _id: ObjectId,
     title: string,
     price: number,
     quantity: number,
@@ -147,10 +147,10 @@ export interface IFilters{
     fields?: IFilterField[],
     sort?: ESortOptions,
     selectedCategory?: {
-        _id: Types.ObjectId,
+        _id: ObjectId,
         name: string,
         subcategories: {
-            _id: Types.ObjectId,
+            _id: ObjectId,
             name: string,
             selected?: boolean
         }[]
@@ -162,8 +162,8 @@ export interface IFilters{
 }
 
 export interface ISearchParams{
-    category?: Types.ObjectId,
-    subcategories?: Types.ObjectId,
+    category?: ObjectId,
+    subcategories?: ObjectId,
     title?: string,
     minPrice?: number,
     maxPrice?: number,

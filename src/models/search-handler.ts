@@ -36,7 +36,7 @@ export class SearchHandler{
                     break
                 case "extraFields":
                     for(const field of val){
-                        filters.push({[field.name]: field.values})
+                        filters.push({[field.name]: {$in: field.values}})
                     }
                     break
                 case "minPrice":
@@ -48,22 +48,27 @@ export class SearchHandler{
                 case "sort":
                     switch(val){
                         case 1:
-                            sort = {sort: {price: 1}}
+                            sort = {price: 1}
                             break
                         case 2:
-                            sort = {sort: {price: -1}}
+                            sort = {price: -1}
                             break
                         case 3:
-                            sort = {sort: {title: 1}}
+                            sort = {title: 1}
                             break
                         case 4:
-                            sort = {sort: {title: -1}}
+                            sort = {title: -1}
                             break
                     }
                     break
             }
         }
-        return await db.getBooksWithConstraint({$and: filters}, sort)
+
+        if(filters.length >= 1){
+            return await db.getBooksWithConstraint({$and: filters}, sort)
+        }else{
+            return await db.getBooksWithConstraint({}, sort)
+        }
     }
 
     async getCurrentFilters(): Promise<IFilters>{

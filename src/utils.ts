@@ -1,4 +1,4 @@
-import { Types } from "mongoose"
+import { ObjectId } from "mongodb"
 import { ICartSummary, ICartItem } from "./types"
 
 export const toNumber = (value: any): number | undefined => {
@@ -6,9 +6,9 @@ export const toNumber = (value: any): number | undefined => {
     return isNaN(res) ? undefined : res
 }
 
-export const toObjectId = (value: string): Types.ObjectId | undefined => {
+export const toObjectId = (value: string): ObjectId | undefined => {
     try{
-        return new Types.ObjectId(value)
+        return new ObjectId(value)
     }
     catch{
         return

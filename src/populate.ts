@@ -1,19 +1,24 @@
-import { connect, Model, model } from "mongoose"
-import { EBookLanguage, EBookState, IBook, ICategoryFull, IUser } from "./types"
-import { bookSchema, categorySchema, userSchema } from "./models/db/schemas"
+import { Collection, MongoClient, ObjectId } from "mongodb"
+import { EBookLanguage, EBookState, IBook, ICategoryFull, ISubcategory, IUser } from "./types"
 
+interface ICategoryPartial {
+    name: string,
+    subcategories: {
+        name: string
+    }[]
+}
 export const populateDb = async (database: string | undefined) => {
     if(!database) throw new Error("Database must be specified!")
-    const connection = await connect(`mongodb://127.0.0.1:27017/${database}`)
-    const User: Model<IUser> = model<IUser>("User", userSchema)
-    const Category: Model<ICategoryFull> = model<ICategoryFull>("Category", categorySchema)
-    const Book: Model<IBook> = model<IBook>("Book", bookSchema)
+    const db = (await new MongoClient(`mongodb://127.0.0.1:27017/${database}`).connect()).db("bookstore")
+    const User: Collection<IUser> = db.collection("users")
+    const Category: Collection<ICategoryPartial> = db.collection("categories")
+    const Book: Collection<Partial<IBook>> = db.collection("books")
 
     if(process.env.TRUNCATE){
-        await connection.connection.dropDatabase()
+        await db.dropDatabase()
     }
 
-    const categories: ICategoryFull[] = await Category.insertMany([
+    await Category.insertMany([
         {
             name: "Fikcja",
             subcategories: [
@@ -55,7 +60,9 @@ export const populateDb = async (database: string | undefined) => {
                 { name: "Atlasy" }
             ]
         }
-    ]) as any as ICategoryFull[]
+    ])
+
+    const categories: ICategoryFull[] = await Category.find().toArray() as ICategoryFull[]
 
     await Book.insertMany([
         {
@@ -175,7 +182,7 @@ export const populateDb = async (database: string | undefined) => {
             state: EBookState.NEW,
             language: EBookLanguage.POLISH,
             category: categories[0]._id,
-            subcategories: [categories[0].subcategories[0]._id, categories[0].subcategories[3]],
+            subcategories: [categories[0].subcategories[0]._id, categories[0].subcategories[3]._id],
             quantity: 10,
             price: 39.99,
             tomeNumber: 1,

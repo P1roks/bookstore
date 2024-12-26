@@ -1,4 +1,4 @@
-import { Types } from "mongoose";
+import { ObjectId } from "mongodb";
 import { db } from "..";
 import { IBookFull, ISessionCart } from "../types";
 
@@ -15,7 +15,7 @@ export class CartHandler{
         let book: IBookFull
 
         try{
-            book = await db.getBookById(new Types.ObjectId(bookId))
+            book = await db.getBookById(new ObjectId(bookId))
         }
         catch{ return }
 
