@@ -36,7 +36,7 @@ export class SearchHandler{
                     break
                 case "extraFields":
                     for(const field of val){
-                        filters.push({[field.name]: field.values})
+                        filters.push({[field.name]: {$in: field.values}})
                     }
                     break
                 case "minPrice":

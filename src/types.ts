@@ -121,7 +121,7 @@ export interface ISessionCart{
 }
 
 export interface ICartItem{
-    _id: number,
+    _id: Types.ObjectId,
     title: string,
     price: number,
     quantity: number,

@@ -142,7 +142,7 @@ export class DatabaseHandler{
         const cartItems: ICartItem[] = await this.Book.find({_id: {$in: selectedIds}}, {_id: 1, title: 1, price: 1, quantity: 1, image: 1})
 
         cartItems.forEach(cartItem => {
-            cartItem.orderQuantity = cartSession.items[cartItem._id].orderQuantity
+            cartItem.orderQuantity = cartSession.items[cartItem._id.toString()].orderQuantity
         })
 
         return cartItems

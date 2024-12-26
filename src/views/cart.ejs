@@ -18,7 +18,7 @@
                     <% cartItems.forEach(item => { %>
                         <div class="cart-item-single">
                         <img src="<%= item.image ? `/assets/covers/${item.image}` : '/assets/covers/missing.png' %>" alt="item">
-                            <a href="/book/<%= item.id %>" class="title"><%= item.title %></a>
+                            <a href="/book/<%= item._id %>" class="title"><%= item.title %></a>
                             <p class="price"><%= item.price %>zł</p>
                             <form class="item-quantity" method="POST" action="/cart/quantity">
                                 <input type="hidden" name="bookId" value="<%= item.id %>">
