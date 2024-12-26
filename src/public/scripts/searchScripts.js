@@ -38,3 +38,8 @@ function filterBooks(){
 
     window.location.href = `/search?${currentFilters.toString()}`
 }
+
+const currentSort = document.querySelector("#header select")
+currentSort.addEventListener("change", function() {
+    changeQueryParam("sort", currentSort.value)
+})

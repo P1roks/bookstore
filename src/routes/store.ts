@@ -64,6 +64,7 @@ storeRouter.get("/search", (req, _, next) => {
                 break
             case "minPrice":
             case "maxPrice":
+            case "sort":
                 result[key] = toNumber(val)
                 break
             default:

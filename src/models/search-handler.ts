@@ -23,6 +23,7 @@ export class SearchHandler{
 
     async getFilteredBooks(): Promise<IBookListItem[]>{
         let filters: any[] = []
+        let sort = {}
 
         for(const [key, val] of Object.entries(this.query)){
             switch (key as keyof ISearchParams){
@@ -44,9 +45,25 @@ export class SearchHandler{
                 case "maxPrice": 
                     filters.push({price: {$lte: val}})
                     break
+                case "sort":
+                    switch(val){
+                        case 1:
+                            sort = {sort: {price: 1}}
+                            break
+                        case 2:
+                            sort = {sort: {price: -1}}
+                            break
+                        case 3:
+                            sort = {sort: {title: 1}}
+                            break
+                        case 4:
+                            sort = {sort: {title: -1}}
+                            break
+                    }
+                    break
             }
         }
-        return await db.getBooksWithConstraint({$and: filters})
+        return await db.getBooksWithConstraint({$and: filters}, sort)
     }
 
     async getCurrentFilters(): Promise<IFilters>{
@@ -69,6 +86,7 @@ export class SearchHandler{
             searchText: this.query.title,
             minPrice: this.query.minPrice,
             maxPrice: this.query.maxPrice,
+            sort: this.query.sort,
             fields,
         }
 

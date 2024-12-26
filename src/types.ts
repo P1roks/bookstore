@@ -69,6 +69,14 @@ export enum EBookLanguage{
     POLISH = "Polski",
 }
 
+export enum ESortOptions{
+    DEFAULT = 0,
+    ASC_PRICE = 1,
+    DESC_PRICE = 2,
+    ASC_TITLE = 3,
+    DESC_TITLE = 4,
+}
+
 // MONGOOSE TYPES
 export interface IUser{
     email: string,
@@ -176,6 +184,7 @@ export interface IFilters{
     minPrice?: number,
     maxPrice?: number,
     fields?: IFilterField[],
+    sort?: ESortOptions,
     selectedCategory?: {
         _id: Types.ObjectId,
         name: string,
@@ -197,6 +206,7 @@ export interface ISearchParams{
     title?: string,
     minPrice?: number,
     maxPrice?: number,
+    sort?: ESortOptions,
     extraFields?: {
         name: string,
         values: string[]

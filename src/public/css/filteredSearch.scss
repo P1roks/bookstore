@@ -2,8 +2,23 @@
     display: flex;
     gap: 5%;
 
-    #books{
+    #search-result{
         width: 85%;
+        #header{
+            display: flex;
+            justify-content: space-between;
+            background-color: $primary;
+            color: $onPrimary;
+            padding: 2%;
+            h1{
+                font-size: 300%;
+            }
+            select{
+                padding: 1%;
+                font-size: large;
+                border-radius: 10px;
+            }
+        }
     }
 
     #filters{

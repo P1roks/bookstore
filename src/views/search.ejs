@@ -64,10 +64,22 @@
                 </section>
 
                 <% if(books.length > 0) { %>
-                <section id="books">
-                    <% books.forEach(book => { %>
-                        <%- include("common/book", {book} ) %>
-                    <% }) %>
+                <section id="search-result">
+                    <div id="header">
+                        <h1>Znalezione wyniki (<%= books.length %>)</h1>
+                        <select>
+                            <option value="0" <% if(filters.sort === 0 ) { %> selected <% } %>>Domyślne Sortowanie</option>
+                            <option value="1" <% if(filters.sort === 1 ) { %> selected <% } %>>Cena - od najniższej</option>
+                            <option value="2" <% if(filters.sort === 2 ) { %> selected <% } %>>Cena - od najwyższej</option>
+                            <option value="3" <% if(filters.sort === 3 ) { %> selected <% } %>>Tytuł - A-Z</option>
+                            <option value="4" <% if(filters.sort === 4 ) { %> selected <% } %>>Tytuł - Z-A</option>
+                        </select>
+                    </div>
+                    <div id="books">
+                        <% books.forEach(book => { %>
+                            <%- include("common/book", {book} ) %>
+                        <% }) %>
+                    </div>
                 </section>
                 <% } else { %>
                     <%- include("common/info", {image: "/assets/no_results.png", header: "Nie znalezliśmy żadnych wyników", description: "Spróbuj wyszukać używając innych filtrów"}) %>

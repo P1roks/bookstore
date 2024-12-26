@@ -76,8 +76,8 @@ export class DatabaseHandler{
         ])
     }
 
-    async getBooksWithConstraint(filter): Promise<IBookListItem[]>{
-        return await this.Book.find(filter, DatabaseHandler.bookListItemProjection)
+    async getBooksWithConstraint(filter, sort): Promise<IBookListItem[]>{
+        return await this.Book.find(filter, DatabaseHandler.bookListItemProjection, sort)
     }
 
     async getBooksByTome(book: IBook | IBookFull): Promise<IBookListItem[]> {
