@@ -22,6 +22,9 @@ storeRouter.get("/", async (req, res, next) => {
 storeRouter.get("/book/:bookId", async (req, res, next) => {
     // display info about given book
     try{
+        if(!Types.ObjectId.isValid(req.params.bookId)){
+            return next() // 404
+        }
         const bookId = new Types.ObjectId(req.params.bookId)
         const book = await db.getBookById(bookId)
         if(book){
@@ -52,20 +55,21 @@ storeRouter.get("/search", (req, _, next) => {
     const result: ISearchParams = {};
 
     for (const [key, val] of Object.entries(req.query)) {
+        let converted
         switch (key as keyof ISearchParams){
             case "category":
             case "subcategories":
-                result[key] = toObjectId(val as string)
+                converted = toObjectId(val as string)
                 break
             case "title":
                 if(typeof val === "string"){
-                    result[key] = val
+                    converted = val
                 }
                 break
             case "minPrice":
             case "maxPrice":
             case "sort":
-                result[key] = toNumber(val)
+                converted = toNumber(val)
                 break
             default:
                 if(["language", "state"].includes(key)){
@@ -76,6 +80,9 @@ storeRouter.get("/search", (req, _, next) => {
                     })
                 }
                 break
+        }
+        if(converted){
+            result[key] = converted
         }
     }
 

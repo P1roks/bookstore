@@ -1,6 +1,6 @@
 import { Request, Router } from "express";
 import { DatabaseHandler } from "../models/db/handler";
-import { CartBookTransfer, ISessionCart } from "../types";
+import { ICartBookTransfer, ISessionCart } from "../types";
 import { db } from "..";
 import { genSummary } from "../utils";
 import { CartHandler } from "../models/cart-handler";
@@ -19,7 +19,7 @@ cartRouter.get("/", async (req, res, next) => {
     }
 })
 
-cartRouter.post("/add", async (req: Request<{}, {}, CartBookTransfer>, res) => {
+cartRouter.post("/add", async (req: Request<{}, {}, ICartBookTransfer>, res) => {
     // add item to cart
     const quantity = req.body.quantity ? parseInt(req.body.quantity, 10) : 1
 
@@ -31,7 +31,7 @@ cartRouter.post("/add", async (req: Request<{}, {}, CartBookTransfer>, res) => {
     res.redirect("/")
 })
 
-cartRouter.post("/quantity", (req: Request<{}, {}, CartBookTransfer>, res) => {
+cartRouter.post("/quantity", (req: Request<{}, {}, ICartBookTransfer>, res) => {
     // change quantity of item
     const newQuantity = parseInt(req.body.quantity as string, 10)
     if(!isNaN(newQuantity) && newQuantity > 0){
@@ -42,7 +42,7 @@ cartRouter.post("/quantity", (req: Request<{}, {}, CartBookTransfer>, res) => {
     res.redirect("/cart")
 })
 
-cartRouter.post("/delete", (req: Request<{}, {}, CartBookTransfer>, res) => {
+cartRouter.post("/delete", (req: Request<{}, {}, ICartBookTransfer>, res) => {
     // delete given item
     const handler = new CartHandler(req.session.cart, (cart: ISessionCart) => {req.session.cart = cart})
     handler.deleteBook(req.body.bookId)

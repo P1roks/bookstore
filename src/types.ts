@@ -1,62 +1,6 @@
 import express from 'express';
 import { Types } from 'mongoose';
 
-export interface SQLDatabaseSettings {
-    host: string | undefined, 
-    port: number | undefined, 
-    user: string | undefined, 
-    password: string | undefined, 
-    database: string | undefined
-}
-
-export interface Database{
-    query(query: string): Promise<unknown[]>
-    format(query: string, data: any[]): string
-    formattedQuery(query: string, data: any[]): Promise<unknown[]>
-}
-
-export interface BookProperty{
-    id: number,
-    name: string,
-    checked?: boolean,
-}
-
-export interface CategoryInfoFull{
-    id: number,
-    name: string,
-    subcategories: BookProperty[],
-}
-
-
-export interface User{
-    email: string
-}
-
-export interface AuthRequest<ReqBody = any> extends express.Request<{}, {}, ReqBody>{
-    loginError?: string,
-    registerError?: string
-}
-
-// object send in by form to backend
-export interface RegisterUserTransfer{
-    email: string,
-    password: string,
-    passwordRepeat: string,
-    terms?: "on",
-}
-
-
-export interface CartBookTransfer{
-    bookId: string,
-    quantity?: string,
-}
-
-export interface CartSummary{
-    totalPrice: number,
-    discountPercentage: number,
-    finalPrice: number,
-}
-
 export enum EBookState{
     NEW = "nowy",
     VGOOD = "bardzo dobry",
@@ -77,7 +21,30 @@ export enum ESortOptions{
     DESC_TITLE = 4,
 }
 
-// MONGOOSE TYPES
+export interface IAuthRequest<ReqBody = any> extends express.Request<{}, {}, ReqBody>{
+    loginError?: string,
+    registerError?: string
+}
+
+// object send in by form to backend
+export interface IRegisterUserTransfer{
+    email: string,
+    password: string,
+    passwordRepeat: string,
+    terms?: "on",
+}
+
+export interface ICartBookTransfer{
+    bookId: string,
+    quantity?: string,
+}
+
+export interface ICartSummary{
+    totalPrice: number,
+    discountPercentage: number,
+    finalPrice: number,
+}
+
 export interface IUser{
     email: string,
     password: string
@@ -86,7 +53,6 @@ export interface IUser{
 export interface SessionUser{
     email: string
 }
-
 
 export interface IBook{
     _id: Types.ObjectId,
@@ -102,11 +68,6 @@ export interface IBook{
     image: string | null,
     language: EBookLanguage,
     state: EBookState,
-}
-
-export interface ILanguage{
-    _id: Types.ObjectId,
-    name: string 
 }
 
 export interface ISubcategory{

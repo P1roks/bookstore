@@ -1,4 +1,4 @@
-import { BookProperty, IBook, IUser, ISessionCart, IBookListItem, ILanguage, ICategoryFull, IBookFull, ICartItem, SessionUser, ICategory } from "../../types"
+import { IBook, IUser, ISessionCart, IBookListItem, ICategoryFull, IBookFull, ICartItem, SessionUser, ICategory } from "../../types"
 import bcrypt from 'bcrypt';
 import { bookSchema, categorySchema, userSchema } from "./schemas";
 import { connect, Model, model, Types } from "mongoose";

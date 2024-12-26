@@ -1,6 +1,6 @@
 import { Model, model, Schema, Types } from "mongoose";
 import bcrypt from "bcrypt";
-import { EBookLanguage, EBookState, IBook, ICategoryFull, ILanguage, IUser } from "../../types";
+import { EBookLanguage, EBookState, IBook, ICategoryFull, IUser } from "../../types";
 
 export const userSchema = new Schema<IUser>({
     password: {type: String, required: true},

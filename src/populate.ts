@@ -1,5 +1,5 @@
 import { connect, Model, model } from "mongoose"
-import { EBookLanguage, EBookState, IBook, ICategoryFull, ILanguage, IUser } from "./types"
+import { EBookLanguage, EBookState, IBook, ICategoryFull, IUser } from "./types"
 import { bookSchema, categorySchema, userSchema } from "./models/db/schemas"
 
 export const populateDb = async (database: string | undefined) => {
@@ -52,7 +52,7 @@ export const populateDb = async (database: string | undefined) => {
             subcategories: [
                 { name: "Przewodniki" },
                 { name: "Relacje z podróży" },
-                { name: "Atlas świata" }
+                { name: "Atlasy" }
             ]
         }
     ]) as any as ICategoryFull[]
