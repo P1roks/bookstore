@@ -56,7 +56,7 @@ cartRouter.get("/buy", async (req, res, next) => {
     try{
         await handler.purchase()
     }catch(error){
-        next(error)
+        return next(error)
     }
 
     res.render("infopage",

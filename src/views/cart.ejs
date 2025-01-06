@@ -21,13 +21,13 @@
                             <a href="/book/<%= item._id %>" class="title"><%= item.title %></a>
                             <p class="price"><%= item.price %>zł</p>
                             <form class="item-quantity" method="POST" action="/cart/quantity">
-                                <input type="hidden" name="bookId" value="<%= item.id %>">
+                                <input type="hidden" name="bookId" value="<%= item._id %>">
                                 <button type="submit" onclick="changeQuantity(this, -1)">-</button>
                                 <input type="number" name="quantity" class="no-spin" min="1" value="<%= item.orderQuantity %>" max="<%= item.quantity %>">
                                 <button type="submit" onclick="changeQuantity(this, 1)">+</button>
                             </form>
                             <form action="/cart/delete" method="POST" class="delete-form">
-                                <input type="hidden" name="bookId" value="<%= item.id %>">
+                                <input type="hidden" name="bookId" value="<%= item._id %>">
                                 <button type="submit">
                                     <span class="material-symbols-outlined">
                                         delete
