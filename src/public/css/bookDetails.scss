@@ -8,9 +8,14 @@
         background-color: $primary;
     }
 
-    #book-image img{
-        height: 40vh;
-        aspect-ratio: 7 / 10;
+    #book-image{
+        display: flex;
+        align-items: center;
+
+        img{
+            height: 40vh;
+            aspect-ratio: 7 / 10;
+        }
     }
 
     #book-info{
@@ -36,6 +41,8 @@
 
         #description{
             flex-grow: 1;
+            min-height: 0;
+            overflow: auto;
             padding: 2%;
             border-radius: 10px;
         }

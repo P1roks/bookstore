@@ -25,7 +25,7 @@ export const genSummary = (cartItems: ICartItem[]): ICartSummary => {
         0
     )
     const discountPercentage = clamp(Math.floor( totalPrice / 100 ) * 5, 0, 25)
-    const finalPrice = totalPrice * (100 - discountPercentage) / 100
+    const finalPrice = (totalPrice * (100 - discountPercentage) / 100) + 12
     return {
         totalPrice,
         discountPercentage,
